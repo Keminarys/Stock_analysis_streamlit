@@ -1,8 +1,11 @@
-import streamlit as st
 import pandas as pd
 import numpy as np
 import datetime
 import time
+import plotly_express as px
+import plotly_graph_objects as go
+import streamlit as st
+
 
 st.set_page_config(layout="wide")
 
@@ -27,3 +30,24 @@ period2 = int(time.mktime(period_end))
 url = f'https://query1.finance.yahoo.com/v7/finance/download/{ticker}?period1={period1}&period2={period2}&interval={interval}&events=history&includeAdjustedClose=true'
 
 df = pd.read_csv(url)
+df['SMA'] = df['Close'].rolling(MA_period).mean()
+df['EMA'] = df['Close'].ewm(span=MA_period).mean()
+
+
+fig4 = go.Figure()
+fig4.add_trace(go.Scatter(x=df["Date"], y=df["Close"],
+                    mode='lines',
+                    name='Close'))
+fig4.add_trace(go.Scatter(x=df["Date"], y=df["SMA"],
+                    mode='lines',
+                    name='SMA'))
+fig4.add_trace(go.Scatter(x=df["Date"], y=df["EMA"],
+                    mode='lines', name='EMA'))
+
+fig4.update_layout(
+    title=ticker+" Closing/SMA/EMA on "+str(MA_period)+" days",
+    autosize=False,
+    width=1500,
+    height=700)
+
+if plots == 'Prices' : st.plotly_chart(fig4)
