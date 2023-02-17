@@ -1,4 +1,10 @@
 import streamlit as st
+import pandas as pd
+import numpy as np
+import datetime
+import time
+import plotly.express as px
+import plotly.graph_objects as go
 
 st.set_page_config(layout="wide")
 
@@ -16,3 +22,10 @@ plots = st.sidebar.radio('Select a plot to show', pages)
 
 with st.expander('Scope reminder'):
   st.write(f'Analysis is for {ticker} prices from {period_start} to {period_end} with an interval of {interval} and moving average is based on {ma_period} days.')
+
+period1 = int(time.mktime(period_start))
+period2 = int(time.mktime(period_end))
+
+url = f'https://query1.finance.yahoo.com/v7/finance/download/{ticker}?period1={period1}&period2={period2}&interval={interval}&events=history&includeAdjustedClose=true'
+
+df = pd.read_csv(url)
