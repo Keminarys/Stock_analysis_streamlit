@@ -31,8 +31,10 @@ period2 = int(time.mktime(period_end.timetuple()))
 url = f'https://query1.finance.yahoo.com/v7/finance/download/{ticker}?period1={period1}&period2={period2}&interval={interval}&events=history&includeAdjustedClose=true'
 
 df = pd.read_csv(url)
-df['SMA'] = df['Close'].rolling(ma_period).mean()
-df['EMA'] = df['Close'].ewm(span=ma_period).mean()
+
+ma_period_int = ma_period.astype(int)
+df['SMA'] = df['Close'].rolling(ma_period_int).mean()
+df['EMA'] = df['Close'].ewm(span=ma_period_int).mean()
 
 
 fig4 = go.Figure()
