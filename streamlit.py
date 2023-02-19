@@ -32,7 +32,7 @@ url = f'https://query1.finance.yahoo.com/v7/finance/download/{ticker}?period1={p
 
 df = pd.read_csv(url)
 
-ma_period_int = ma_period.astype(int)
+ma_period_int = int(ma_period)
 df['SMA'] = df['Close'].rolling(ma_period_int).mean()
 df['EMA'] = df['Close'].ewm(span=ma_period_int).mean()
 
