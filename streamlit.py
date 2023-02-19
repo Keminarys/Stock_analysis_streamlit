@@ -12,7 +12,7 @@ st.set_page_config(layout="wide")
 
 st.title('Stock analyzer')  
 
-pages = ['Prices','Candlesticks','Volume','Forecast']
+pages = ['Prices','Candlesticks','Volume','Forecast', 'General Info']
 
 st.sidebar.header('Parameters')
 ticker = st.sidebar.text_input('Please enter a ticker')
@@ -36,7 +36,24 @@ ma_period_int = int(ma_period)
 df['SMA'] = df['Close'].rolling(ma_period_int).mean()
 df['EMA'] = df['Close'].ewm(span=ma_period_int).mean()
 
+### Volumes
+fig3 = px.histogram(df, x="Date", y='Volume', nbins=len(df.Volume), title = ticker+" Volume", width=1500, height=700)
+fig3.update_layout(bargap=0.2)
 
+### Candlesticks
+fig2 = go.Figure(data=[go.Candlestick(x=df['Date'],
+                open=df['Open'],
+                high=df['High'],
+                low=df['Low'],
+                close=df['Close'])])
+
+fig2.update_layout(
+    title=ticker+" Candlestick",
+    autosize=False,
+    width=1500,
+    height=700)
+
+### Prices 
 fig4 = go.Figure()
 fig4.add_trace(go.Scatter(x=df["Date"], y=df["Close"],
                     mode='lines',
@@ -54,3 +71,5 @@ fig4.update_layout(
     height=700)
 
 if plots == 'Prices' : st.plotly_chart(fig4)
+if plots == 'Candlesticks' : st.plotly_chart(fig2)
+if plots == 'Volume' : st.plotly_chart(fig3)  
