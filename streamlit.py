@@ -31,8 +31,8 @@ period2 = int(time.mktime(period_end.timetuple()))
 url = f'https://query1.finance.yahoo.com/v7/finance/download/{ticker}?period1={period1}&period2={period2}&interval={interval}&events=history&includeAdjustedClose=true'
 
 df = pd.read_csv(url)
-df['SMA'] = df['Close'].rolling(MA_period).mean()
-df['EMA'] = df['Close'].ewm(span=MA_period).mean()
+df['SMA'] = df['Close'].rolling(ma_period).mean()
+df['EMA'] = df['Close'].ewm(span=ma_period).mean()
 
 
 fig4 = go.Figure()
@@ -46,7 +46,7 @@ fig4.add_trace(go.Scatter(x=df["Date"], y=df["EMA"],
                     mode='lines', name='EMA'))
 
 fig4.update_layout(
-    title=ticker+" Closing/SMA/EMA on "+str(MA_period)+" days",
+    title=ticker+" Closing/SMA/EMA on "+str(ma_period)+" days",
     autosize=False,
     width=1500,
     height=700)
