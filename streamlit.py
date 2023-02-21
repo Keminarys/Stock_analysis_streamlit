@@ -19,7 +19,7 @@ ticker = st.sidebar.text_input('Please enter a ticker')
 period_start = st.sidebar.date_input('Please enter starting date')
 period_end = st.sidebar.date_input('Please enter ending date')
 ma_period = st.sidebar.text_input('Please enter a moving average period')
-interval = st.sidebar.selectbox('Please choose an interval', ['1d', '1w', '1m'])
+interval = st.sidebar.selectbox('Please choose an interval', ['1d', '1wk', '1mo'])
 plots = st.sidebar.radio('Select a plot to show', pages)
 
 with st.expander('Scope reminder'):
