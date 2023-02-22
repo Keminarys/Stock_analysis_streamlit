@@ -39,17 +39,59 @@ with st.expander('Scope reminder'):
 
   
 #####################################################
+
 period1 = int(time.mktime(period_start.timetuple()))
 period2 = int(time.mktime(period_end.timetuple()))
+period1_f = int(time.mktime(period_start_f.timetuple()))
+period2_f = int(time.mktime(period_end_f.timetuple()))
 
 url = f'https://query1.finance.yahoo.com/v7/finance/download/{ticker}?period1={period1}&period2={period2}&interval={interval}&events=history&includeAdjustedClose=true'
+url_f = f'https://query1.finance.yahoo.com/v7/finance/download/{ticker}?period1={period1_f}&period2={period2_f}&interval={interval}&events=history&includeAdjustedClose=true'
 
 df = pd.read_csv(url)
+df_f = pd.read_csv(url_f)
 
 ma_period_int = int(ma_period)
+forecast_days_int = int(forecast_days)
+
 df['SMA'] = df['Close'].rolling(ma_period_int).mean()
 df['EMA'] = df['Close'].ewm(span=ma_period_int).mean()
 
+def date_range(start, end):
+    delta = end - start
+    days = [start + datetime.timedelta(days=i) for i in range(delta.days + 1)]
+    return days
+  
+startDatec = datetime.datetime(2020, 2, 17)
+endDatec = datetime.datetime(2020, 3, 17)
+      
+datescovid = date_range(startDatec, endDatec)
+
+startDatew = datetime.datetime(2022, 2, 24)
+endDatew = datetime.datetime(2022, 3, 10)
+      
+dateswar = date_range(startDatew, endDatew)
+
+covid = pd.DataFrame({
+  'holiday': 'covid',
+  'ds': datescovid,
+  'lower_window': 0,
+  'upper_window': 1,
+})
+war = pd.DataFrame({
+  'holiday': 'war',
+  'ds': dateswar,
+  'lower_window': 0,
+  'upper_window': 1,
+})
+events = pd.concat((covid, war))
+
+df_proph = df_f[['Date', 'Close']]
+df_proph.columns = ['ds', 'y']
+m = Prophet(daily_seasonality=False, weekly_seasonality=False, holidays = events)
+m.fit(df_proph)
+future = m.make_future_dataframe(periods=forecast_days_int)
+forecast = m.predict(future)
 #######################################################
 
 ### Volumes
@@ -91,4 +133,9 @@ fig4.update_layout(
 with st.container():
   if plots == 'Prices' : st.plotly_chart(fig4)
   if plots == 'Candlesticks' : st.plotly_chart(fig2)
-  if plots == 'Volume' : st.plotly_chart(fig3)  
+  if plots == 'Volume' : st.plotly_chart(fig3)
+    
+if plots_f == 'Yes' : 
+  with st.container():
+    st.plotly_chart(plot_plotly(m, forecast))
+    st.plotly_chart(plot_components_plotly(m, forecast))
