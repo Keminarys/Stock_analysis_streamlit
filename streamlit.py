@@ -12,7 +12,8 @@ st.set_page_config(layout="wide")
 
 st.title('Stock analyzer')  
 
-pages = ['Prices','Candlesticks','Volume','General Info']
+pages = ['Prices','Candlesticks','Volume']
+pages_f = ['Yes','No']
 
 with st.sidebar.expander("General Input"):
   st.write("This section is used for stock analysis")
@@ -22,10 +23,18 @@ with st.sidebar.expander("General Input"):
   ma_period = st.text_input('Please enter a moving average period')
   interval = st.selectbox('Please choose an interval', ['1d', '1wk', '1mo'])
   plots = st.radio('Select a plot to show', pages)
+ 
+with st.sidebar.expander("Forecast Input"):
+  st.write("This section is used for forecasting")
+  period_start_f = st.date_input('Please enter starting date')
+  period_end_f = st.date_input('Please enter ending date')
+  plots = st.radio('Show forecast plot ?', pages_f)
 
 with st.expander('Scope reminder'):
   st.write(f'Analysis is for {ticker} prices from {period_start} to {period_end} with an interval of {interval} and moving average is based on {ma_period} days.')
 
+  
+#####################################################
 period1 = int(time.mktime(period_start.timetuple()))
 period2 = int(time.mktime(period_end.timetuple()))
 
@@ -36,6 +45,8 @@ df = pd.read_csv(url)
 ma_period_int = int(ma_period)
 df['SMA'] = df['Close'].rolling(ma_period_int).mean()
 df['EMA'] = df['Close'].ewm(span=ma_period_int).mean()
+
+#######################################################
 
 ### Volumes
 fig3 = px.histogram(df, x="Date", y='Volume', nbins=len(df.Volume), title = ticker+" Volume", width=1500, height=700)
@@ -70,6 +81,8 @@ fig4.update_layout(
     autosize=False,
     width=1500,
     height=700)
+
+########################################################
 
 with st.container():
   if plots == 'Prices' : st.plotly_chart(fig4)
