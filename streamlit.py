@@ -130,7 +130,11 @@ if plots_f == 'Yes' :
   future = m.make_future_dataframe(periods=forecast_days_int)
   forecast = m.predict(future)
   with st.container():
-    st.plotly_chart(plot_plotly(m, forecast))
-  with st.container(): 
-    st.plotly_chart(plot_components_plotly(m, forecast))
+    col1, col2 = st.columns(2)
+    with col1:
+        st.header("Past and Forecast using Prophet")
+        st.plotly_chart(plot_plotly(m, forecast))
+    with col2:
+        st.header("A cat")
+        st.plotly_chart(plot_components_plotly(m, forecast))
 ############################################################
