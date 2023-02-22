@@ -26,9 +26,10 @@ with st.sidebar.expander("General Input"):
  
 with st.sidebar.expander("Forecast Input"):
   st.write("This section is used for forecasting")
-  period_start_f = st.date_input('Please enter starting date')
-  period_end_f = st.date_input('Please enter ending date')
-  plots = st.radio('Show forecast plot ?', pages_f)
+  period_start_f = st.date_input('Starting date for forecasting input data')
+  period_end_f = st.date_input('Ending date for forecasting input data')
+  forecast_days = st.text_input('Number of days used to forecast')
+  plots_f = st.radio('Show forecast plot ?', pages_f)
 
 with st.expander('Scope reminder'):
   st.write(f'Analysis is for {ticker} prices from {period_start} to {period_end} with an interval of {interval} and moving average is based on {ma_period} days.')
