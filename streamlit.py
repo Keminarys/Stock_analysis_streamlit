@@ -26,8 +26,9 @@ with st.sidebar.expander("General Input"):
  
 with st.sidebar.expander("Forecast Input"):
   st.write("""
-  This section is used for forecasting 
-  Note that if you want to forecast for a long period of time you will need a high year delta
+  This section is used for forecasting \n
+  Note that if you want to forecast for a long period of time \n
+  you will need a high year delta.
   """)
   period_start_f = st.date_input('Starting date for forecasting input data')
   period_end_f = st.date_input('Ending date for forecasting input data')
