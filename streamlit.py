@@ -16,12 +16,12 @@ pages = ['Prices','Candlesticks','Volume','General Info']
 
 with st.sidebar.expander("General Input"):
   st.write("This section is used for stock analysis")
-  ticker = st.sidebar.text_input('Please enter a ticker')
-  period_start = st.sidebar.date_input('Please enter starting date')
-  period_end = st.sidebar.date_input('Please enter ending date')
-  ma_period = st.sidebar.text_input('Please enter a moving average period')
-  interval = st.sidebar.selectbox('Please choose an interval', ['1d', '1wk', '1mo'])
-  plots = st.sidebar.radio('Select a plot to show', pages)
+  ticker = st.text_input('Please enter a ticker')
+  period_start = st.date_input('Please enter starting date')
+  period_end = st.date_input('Please enter ending date')
+  ma_period = st.text_input('Please enter a moving average period')
+  interval = st.selectbox('Please choose an interval', ['1d', '1wk', '1mo'])
+  plots = st.radio('Select a plot to show', pages)
 
 with st.expander('Scope reminder'):
   st.write(f'Analysis is for {ticker} prices from {period_start} to {period_end} with an interval of {interval} and moving average is based on {ma_period} days.')
