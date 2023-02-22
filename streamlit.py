@@ -25,7 +25,7 @@ with st.sidebar.expander("General Input"):
   ticker = st.text_input('Please enter a ticker', "AIR.PA")
   period_start = st.date_input('Please enter starting date', datetime(2021,1,1))
   period_end = st.date_input('Please enter ending date', (datetime.date.today() - datetime.timedelta(days=1))
-  ma_period = st.text_input('Please enter a moving average period', 50)
+  ma_period = st.text_input('Please enter a moving average period', "50")
   interval = st.selectbox('Please choose an interval', ['1d', '1wk', '1mo'])
   plots = st.radio('Select a plot to show', pages)
  
