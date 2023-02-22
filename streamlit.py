@@ -49,7 +49,6 @@ period2 = int(time.mktime(period_end.timetuple()))
 url = f'https://query1.finance.yahoo.com/v7/finance/download/{ticker}?period1={period1}&period2={period2}&interval={interval}&events=history&includeAdjustedClose=true'
 
 df = pd.read_csv(url)
-df_f = pd.read_csv(url_f)
 
 ma_period_int = int(ma_period)
 forecast_days_int = int(forecast_days)
@@ -103,7 +102,8 @@ if plots_f == 'Yes' :
   period1_f = int(time.mktime(period_start_f.timetuple()))
   period2_f = int(time.mktime(period_end_f.timetuple()))
   url_f = f'https://query1.finance.yahoo.com/v7/finance/download/{ticker}?period1={period1_f}&period2={period2_f}&interval={interval}&events=history&includeAdjustedClose=true'
-  
+  df_f = pd.read_csv(url_f)
+
   startDatec = datetime.datetime(2020, 2, 17)
   endDatec = datetime.datetime(2020, 3, 17)      
   datescovid = date_range(startDatec, endDatec)
