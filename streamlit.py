@@ -39,8 +39,7 @@ with st.sidebar.expander("Forecast Input"):
   forecast_days = st.text_input('Number of days used to forecast', "15")
   plots_f = st.radio('Show forecast plot ?', pages_f)
 
-with st.expander('Scope reminder'):
-  st.write(f'Analysis is for {ticker} prices from {period_start} to {period_end} with an interval of {interval} and moving average is based on {ma_period} days.')
+st.write(f'Analysis is for {ticker} prices from {period_start} to {period_end} with an interval of {interval} and moving average is based on {ma_period} days.')
   
 #####################################################
 period1 = int(time.mktime(period_start.timetuple()))
