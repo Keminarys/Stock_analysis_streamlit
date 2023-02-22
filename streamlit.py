@@ -22,10 +22,10 @@ pages_f = ['No','Yes']
 
 with st.sidebar.expander("General Input"):
   st.write("This section is used for stock analysis")
-  ticker = st.text_input('Please enter a ticker')
-  period_start = st.date_input('Please enter starting date')
-  period_end = st.date_input('Please enter ending date')
-  ma_period = st.text_input('Please enter a moving average period')
+  ticker = st.text_input('Please enter a ticker', "AIR.PA")
+  period_start = st.date_input('Please enter starting date', datetime(2021,1,1))
+  period_end = st.date_input('Please enter ending date', (datetime.date.today() - datetime.timedelta(days=1))
+  ma_period = st.text_input('Please enter a moving average period', 50)
   interval = st.selectbox('Please choose an interval', ['1d', '1wk', '1mo'])
   plots = st.radio('Select a plot to show', pages)
  
@@ -34,8 +34,8 @@ with st.sidebar.expander("Forecast Input"):
   This section is used for forecasting \n
   Note that if you want to forecast for a long period of time you will need a high year delta.
   """)
-  period_start_f = st.date_input('Starting date for forecasting input data')
-  period_end_f = st.date_input('Ending date for forecasting input data')
+  period_start_f = st.date_input('Starting date for forecasting input data', datetime(2021,1,1))
+  period_end_f = st.date_input('Ending date for forecasting input data', datetime(2023,1,1))
   forecast_days = st.text_input('Number of days used to forecast')
   plots_f = st.radio('Show forecast plot ?', pages_f)
 
