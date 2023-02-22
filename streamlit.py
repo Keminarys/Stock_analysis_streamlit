@@ -71,6 +71,7 @@ fig4.update_layout(
     width=1500,
     height=700)
 
-if plots == 'Prices' : st.plotly_chart(fig4)
-if plots == 'Candlesticks' : st.plotly_chart(fig2)
-if plots == 'Volume' : st.plotly_chart(fig3)  
+with st.container():
+  if plots == 'Prices' : st.plotly_chart(fig4)
+  if plots == 'Candlesticks' : st.plotly_chart(fig2)
+  if plots == 'Volume' : st.plotly_chart(fig3)  
