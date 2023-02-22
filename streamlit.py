@@ -135,6 +135,6 @@ if plots_f == 'Yes' :
         st.header("Past and Forecast using Prophet")
         st.plotly_chart(plot_plotly(m, forecast))
     with col2:
-        st.header("A cat")
+        st.header("Trends")
         st.plotly_chart(plot_components_plotly(m, forecast))
 ############################################################
