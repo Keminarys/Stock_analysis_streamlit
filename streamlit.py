@@ -131,5 +131,6 @@ if plots_f == 'Yes' :
   forecast = m.predict(future)
   with st.container():
     st.plotly_chart(plot_plotly(m, forecast))
+  with st.container(): 
     st.plotly_chart(plot_components_plotly(m, forecast))
 ############################################################
