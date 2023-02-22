@@ -5,15 +5,20 @@ import time
 import plotly.express as px
 import plotly.graph_objects as go
 from prophet import Prophet
+from prophet.plot import plot_plotly, plot_components_plotly
 import streamlit as st
 
+def date_range(start, end):
+    delta = end - start
+    days = [start + datetime.timedelta(days=i) for i in range(delta.days + 1)]
+    return days
 
 st.set_page_config(layout="wide")
 
 st.title('Stock analyzer')  
 
 pages = ['Prices','Candlesticks','Volume']
-pages_f = ['Yes','No']
+pages_f = ['No','Yes']
 
 with st.sidebar.expander("General Input"):
   st.write("This section is used for stock analysis")
@@ -36,17 +41,12 @@ with st.sidebar.expander("Forecast Input"):
 
 with st.expander('Scope reminder'):
   st.write(f'Analysis is for {ticker} prices from {period_start} to {period_end} with an interval of {interval} and moving average is based on {ma_period} days.')
-
   
 #####################################################
-
 period1 = int(time.mktime(period_start.timetuple()))
 period2 = int(time.mktime(period_end.timetuple()))
-period1_f = int(time.mktime(period_start_f.timetuple()))
-period2_f = int(time.mktime(period_end_f.timetuple()))
 
 url = f'https://query1.finance.yahoo.com/v7/finance/download/{ticker}?period1={period1}&period2={period2}&interval={interval}&events=history&includeAdjustedClose=true'
-url_f = f'https://query1.finance.yahoo.com/v7/finance/download/{ticker}?period1={period1_f}&period2={period2_f}&interval={interval}&events=history&includeAdjustedClose=true'
 
 df = pd.read_csv(url)
 df_f = pd.read_csv(url_f)
@@ -56,42 +56,6 @@ forecast_days_int = int(forecast_days)
 
 df['SMA'] = df['Close'].rolling(ma_period_int).mean()
 df['EMA'] = df['Close'].ewm(span=ma_period_int).mean()
-
-def date_range(start, end):
-    delta = end - start
-    days = [start + datetime.timedelta(days=i) for i in range(delta.days + 1)]
-    return days
-  
-startDatec = datetime.datetime(2020, 2, 17)
-endDatec = datetime.datetime(2020, 3, 17)
-      
-datescovid = date_range(startDatec, endDatec)
-
-startDatew = datetime.datetime(2022, 2, 24)
-endDatew = datetime.datetime(2022, 3, 10)
-      
-dateswar = date_range(startDatew, endDatew)
-
-covid = pd.DataFrame({
-  'holiday': 'covid',
-  'ds': datescovid,
-  'lower_window': 0,
-  'upper_window': 1,
-})
-war = pd.DataFrame({
-  'holiday': 'war',
-  'ds': dateswar,
-  'lower_window': 0,
-  'upper_window': 1,
-})
-events = pd.concat((covid, war))
-
-df_proph = df_f[['Date', 'Close']]
-df_proph.columns = ['ds', 'y']
-m = Prophet(daily_seasonality=False, weekly_seasonality=False, holidays = events)
-m.fit(df_proph)
-future = m.make_future_dataframe(periods=forecast_days_int)
-forecast = m.predict(future)
 #######################################################
 
 ### Volumes
@@ -127,7 +91,6 @@ fig4.update_layout(
     autosize=False,
     width=1500,
     height=700)
-
 ########################################################
 
 with st.container():
@@ -136,6 +99,37 @@ with st.container():
   if plots == 'Volume' : st.plotly_chart(fig3)
     
 if plots_f == 'Yes' : 
+  
+  period1_f = int(time.mktime(period_start_f.timetuple()))
+  period2_f = int(time.mktime(period_end_f.timetuple()))
+  url_f = f'https://query1.finance.yahoo.com/v7/finance/download/{ticker}?period1={period1_f}&period2={period2_f}&interval={interval}&events=history&includeAdjustedClose=true'
+  
+  startDatec = datetime.datetime(2020, 2, 17)
+  endDatec = datetime.datetime(2020, 3, 17)      
+  datescovid = date_range(startDatec, endDatec)
+  startDatew = datetime.datetime(2022, 2, 24)
+  endDatew = datetime.datetime(2022, 3, 10)      
+  dateswar = date_range(startDatew, endDatew)
+
+  covid = pd.DataFrame({
+    'holiday': 'covid',
+    'ds': datescovid,
+    'lower_window': 0,
+    'upper_window': 1,})
+  war = pd.DataFrame({
+    'holiday': 'war',
+    'ds': dateswar,
+    'lower_window': 0,
+    'upper_window': 1,})
+  events = pd.concat((covid, war))
+
+  df_proph = df_f[['Date', 'Close']]
+  df_proph.columns = ['ds', 'y']
+  m = Prophet(daily_seasonality=False, weekly_seasonality=False, holidays = events)
+  m.fit(df_proph)
+  future = m.make_future_dataframe(periods=forecast_days_int)
+  forecast = m.predict(future)
   with st.container():
     st.plotly_chart(plot_plotly(m, forecast))
     st.plotly_chart(plot_components_plotly(m, forecast))
+############################################################
