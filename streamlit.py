@@ -42,7 +42,9 @@ with st.sidebar.expander("Forecast Input"):
   plots_f = st.radio('Show forecast plot ?', pages_f)
 
 with st.sidebar.expander("Technical Analysis Indicator"):
-    st.sidebar.multiselect('Which indicator would you like to plot', pages_i)
+    st.write("""You can choose different key indicators here""")
+    st.multiselect('Which indicator would you like to plot', pages_i)
+    
 st.write(f'Analysis is for {ticker} prices from {period_start} to {period_end} with an interval of {interval} and moving average is based on {ma_period} days.')
   
 #####################################################
