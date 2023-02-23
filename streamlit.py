@@ -4,6 +4,7 @@ import datetime
 import time
 import plotly.express as px
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 from prophet import Prophet
 from prophet.plot import plot_plotly, plot_components_plotly
 import streamlit as st
@@ -17,8 +18,9 @@ st.set_page_config(layout="wide")
 
 st.title('Stock analyzer')  
 
-pages = ['Prices','Candlesticks','Volume']
+pages = ['Prices','Candlesticks']
 pages_f = ['No','Yes']
+pages_i = ['MACD', 'SAR', 'Bollinger', 'Fibonacci', 'Stochastics oscillator']
 
 with st.sidebar.expander("General Input"):
   st.write("This section is used for stock analysis")
@@ -39,6 +41,8 @@ with st.sidebar.expander("Forecast Input"):
   forecast_days = st.text_input('Number of days used to forecast', "15")
   plots_f = st.radio('Show forecast plot ?', pages_f)
 
+with st.sidebar.expander("Technical Analysis Indicator"):
+    st.sidebar.multiselect('Which indicator would you like to plot', pages_i)
 st.write(f'Analysis is for {ticker} prices from {period_start} to {period_end} with an interval of {interval} and moving average is based on {ma_period} days.')
   
 #####################################################
@@ -56,22 +60,16 @@ df['SMA'] = df['Close'].rolling(ma_period_int).mean()
 df['EMA'] = df['Close'].ewm(span=ma_period_int).mean()
 #######################################################
 
-### Volumes
-fig3 = px.histogram(df, x="Date", y='Volume', nbins=len(df.Volume), title = ticker+" Volume", width=1500, height=700)
-fig3.update_layout(bargap=0.2)
-
 ### Candlesticks
-fig2 = go.Figure(data=[go.Candlestick(x=df['Date'],
-                open=df['Open'],
-                high=df['High'],
-                low=df['Low'],
-                close=df['Close'])])
-
-fig2.update_layout(
-    title=ticker+" Candlestick",
-    autosize=False,
-    width=1500,
-    height=700)
+fig2 =  make_subplots(rows=2, cols=1, shared_xaxes=True, 
+               vertical_spacing=0.02, subplot_titles=(ticker+" Candlestick",''), 
+               row_width=[0.2, 0.7])
+fig2.add_trace(go.Candlestick(x=df["Date"], open=df["Open"], high=df["High"],
+                low=df["Low"], close=df["Close"]), 
+                row=1, col=1)
+fig2.add_trace(go.Bar(x=df['Date'], y=df['Volume'], showlegend=False), row=2, col=1)
+fig2.update(layout_xaxis_rangeslider_visible=False)
+fig2.update_layout(width=1500, height=700, showlegend=False)
 
 ### Prices 
 fig4 = go.Figure()
@@ -94,7 +92,6 @@ fig4.update_layout(
 with st.container():
   if plots == 'Prices' : st.plotly_chart(fig4)
   if plots == 'Candlesticks' : st.plotly_chart(fig2)
-  if plots == 'Volume' : st.plotly_chart(fig3)
     
 if plots_f == 'Yes' : 
   
