@@ -155,7 +155,7 @@ with st.sidebar.expander("Technical Analysis Indicator"):
     more_opt = st.radio('Would you like to plot some indicators ?', check_i)
     if more_opt == 'Yes' :
         st.write("You can choose different key indicators here")
-        st.multiselect('Which indicator would you like to plot', pages_i)
+        indic_to_plot = st.multiselect('Which indicator would you like to plot', pages_i)
 
 
 st.write(f'Analysis is for {ticker} prices from {period_start} to {period_end} with an interval of {interval} and moving average is based on {ma_period} days.')
@@ -258,5 +258,22 @@ if plots_f == 'Yes' :
 ############################################################
 if more_opt == 'Yes' :
     
-    psar_bull = df.loc[df['Trend']==1]['PSAR']
-    psar_bear = df.loc[df['Trend']==0]['PSAR']
+    psar_bull = df.loc[df['Trend']==1][['Date','PSAR']].set_index('Date')
+    psar_bear = df.loc[df['Trend']==0][['Date','PSAR']].set_index('Date')
+    buy_sigs = df.loc[df['Trend'].diff()==1][['Date','Close']].set_index('Date')
+    short_sigs = df.loc[df['Trend'].diff()==-1][['Date','Close']].set_index('Date')
+    if "SAR" is in indic_to_plot :
+        colors_bull_bear = ['springgreen', 'crimson', 'black']
+        fig_sar = go.Figure([go.Candlestick(x=df['Date'],
+                open=df['Open'],
+                high=df['High'],
+                low=df['Low'],
+                close=df['Close'], name = 'Price'),
+        go.Scatter( x= psar_bull.index, y = psar_bull.PSAR, name='Up Trend', mode='markers', marker_color = colors_bull_bear[0]), 
+        go.Scatter( x= psar_bear.index, y = psar_bear.PSAR, name='Down Trend', mode='markers', marker_color = colors_bull_bear[1]), 
+        go.Scatter( x= buy_sigs.index, y = buy_sigs.Close, name='Buy', mode='markers', marker_symbol='triangle-up-dot', marker_size=15, marker_color = colors_bull_bear[2]),
+        go.Scatter( x= short_sigs.index, y = short_sigs.Close, name='Short', mode='markers', marker_symbol='triangle-down-dot', marker_size=15, marker_color = colors_bull_bear[2])])
+    
+        fig_sar.update(layout_xaxis_rangeslider_visible=False)
+        with st.container():
+            st.plotly_chart(fig_sar)
