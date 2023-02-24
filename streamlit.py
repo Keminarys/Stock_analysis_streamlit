@@ -154,9 +154,11 @@ with st.sidebar.expander("Forecast Input"):
 with st.sidebar.expander("Technical Analysis Indicator"):
     st.radio('Would you like to plot some indicators ?', check_i)
     if check_i == 'Yes' : 
-        st.write("""You can choose different key indicators here""")
+        st.write("You can choose different key indicators here")
         st.multiselect('Which indicator would you like to plot', pages_i)
-    
+    else : 
+        st.write("Nothing ...")
+
 st.write(f'Analysis is for {ticker} prices from {period_start} to {period_end} with an interval of {interval} and moving average is based on {ma_period} days.')
   
 #####################################################
@@ -174,9 +176,7 @@ df['SMA'] = df['Close'].rolling(ma_period_int).mean()
 df['EMA'] = df['Close'].ewm(span=ma_period_int).mean()
 indic = PSAR()
 
-df['PSAR'] = df.apply(
-    lambda x: indic.calcPSAR(x['High'], x['Low']), axis=1)
-# Add supporting data
+df['PSAR'] = df.apply(lambda x: indic.calcPSAR(x['High'], x['Low']), axis=1)
 df['EP'] = indic.ep_list
 df['Trend'] = indic.trend_list
 df['AF'] = indic.af_list
