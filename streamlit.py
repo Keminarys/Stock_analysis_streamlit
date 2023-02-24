@@ -129,7 +129,7 @@ st.title('Stock analyzer')
 
 pages = ['Prices','Candlesticks']
 pages_f = ['No','Yes']
-check_i = ['No','Yes']
+check_i= ['No','Yes']
 pages_i = ['MACD', 'SAR', 'Bollinger', 'Fibonacci', 'Stochastics oscillator']
 
 with st.sidebar.expander("General Input"):
@@ -152,12 +152,11 @@ with st.sidebar.expander("Forecast Input"):
   plots_f = st.radio('Show forecast plot ?', pages_f)
 
 with st.sidebar.expander("Technical Analysis Indicator"):
-    st.radio('Would you like to plot some indicators ?', check_i)
-    if check_i == 'Yes' : 
+    more_opt = st.radio('Would you like to plot some indicators ?', check_i)
+    if more_opt == 'Yes' :
         st.write("You can choose different key indicators here")
         st.multiselect('Which indicator would you like to plot', pages_i)
-    else : 
-        st.write("Nothing ...")
+
 
 st.write(f'Analysis is for {ticker} prices from {period_start} to {period_end} with an interval of {interval} and moving average is based on {ma_period} days.')
   
@@ -257,7 +256,7 @@ if plots_f == 'Yes' :
         st.header("Trends")
         st.plotly_chart(plot_components_plotly(m, forecast))
 ############################################################
-if check_i == 'Yes' : 
+if more_opt == 'Yes' :
     
     psar_bull = df.loc[df['Trend']==1]['PSAR']
     psar_bear = df.loc[df['Trend']==0]['PSAR']
