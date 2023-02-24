@@ -262,7 +262,7 @@ if more_opt == 'Yes' :
     psar_bear = df.loc[df['Trend']==0][['Date','PSAR']].set_index('Date')
     buy_sigs = df.loc[df['Trend'].diff()==1][['Date','Close']].set_index('Date')
     short_sigs = df.loc[df['Trend'].diff()==-1][['Date','Close']].set_index('Date')
-    if "SAR" is in indic_to_plot :
+    if "SAR" in indic_to_plot :
         colors_bull_bear = ['springgreen', 'crimson', 'black']
         fig_sar = go.Figure([go.Candlestick(x=df['Date'],
                 open=df['Open'],
