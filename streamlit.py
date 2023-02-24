@@ -275,5 +275,6 @@ if more_opt == 'Yes' :
         go.Scatter( x= short_sigs.index, y = short_sigs.Close, name='Short', mode='markers', marker_symbol='triangle-down-dot', marker_size=15, marker_color = colors_bull_bear[2])])
     
         fig_sar.update(layout_xaxis_rangeslider_visible=False)
+        fig4.update_layout(title=ticker+" SAR indicator",autosize=False,width=1500,height=700)
         with st.container():
             st.plotly_chart(fig_sar)
