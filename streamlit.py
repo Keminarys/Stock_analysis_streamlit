@@ -8,11 +8,120 @@ from plotly.subplots import make_subplots
 from prophet import Prophet
 from prophet.plot import plot_plotly, plot_components_plotly
 import streamlit as st
+from collections import deque
 
 def date_range(start, end):
     delta = end - start
     days = [start + datetime.timedelta(days=i) for i in range(delta.days + 1)]
     return days
+
+class PSAR:
+
+  def __init__(self, init_af=0.02, max_af=0.2, af_step=0.02):
+    self.max_af = max_af
+    self.init_af = init_af
+    self.af = init_af
+    self.af_step = af_step
+    self.extreme_point = None
+    self.high_price_trend = []
+    self.low_price_trend = []
+    self.high_price_window = deque(maxlen=2)
+    self.low_price_window = deque(maxlen=2)
+
+    # Lists to track results
+    self.psar_list = []
+    self.af_list = []
+    self.ep_list = []
+    self.high_list = []
+    self.low_list = []
+    self.trend_list = []
+    self._num_days = 0
+
+  def calcPSAR(self, high, low):
+    if self._num_days >= 3:
+      psar = self._calcPSAR()
+    else:
+      psar = self._initPSARVals(high, low)
+
+    psar = self._updateCurrentVals(psar, high, low)
+    self._num_days += 1
+
+    return psar
+
+  def _initPSARVals(self, high, low):
+    if len(self.low_price_window) <= 1:
+      self.trend = None
+      self.extreme_point = high
+      return None
+
+    if self.high_price_window[0] < self.high_price_window[1]:
+      self.trend = 1
+      psar = min(self.low_price_window)
+      self.extreme_point = max(self.high_price_window)
+    else: 
+      self.trend = 0
+      psar = max(self.high_price_window)
+      self.extreme_point = min(self.low_price_window)
+
+    return psar
+
+  def _calcPSAR(self):
+    prev_psar = self.psar_list[-1]
+    if self.trend == 1: # Up
+      psar = prev_psar + self.af * (self.extreme_point - prev_psar)
+      psar = min(psar, min(self.low_price_window))
+    else:
+      psar = prev_psar - self.af * (prev_psar - self.extreme_point)
+      psar = max(psar, max(self.high_price_window))
+
+    return psar
+
+  def _updateCurrentVals(self, psar, high, low):
+    if self.trend == 1:
+      self.high_price_trend.append(high)
+    elif self.trend == 0:
+      self.low_price_trend.append(low)
+
+    psar = self._trendReversal(psar, high, low)
+
+    self.psar_list.append(psar)
+    self.af_list.append(self.af)
+    self.ep_list.append(self.extreme_point)
+    self.high_list.append(high)
+    self.low_list.append(low)
+    self.high_price_window.append(high)
+    self.low_price_window.append(low)
+    self.trend_list.append(self.trend)
+
+    return psar
+
+  def _trendReversal(self, psar, high, low):
+    # Checks for reversals
+    reversal = False
+    if self.trend == 1 and psar > low:
+      self.trend = 0
+      psar = max(self.high_price_trend)
+      self.extreme_point = low
+      reversal = True
+    elif self.trend == 0 and psar < high:
+      self.trend = 1
+      psar = min(self.low_price_trend)
+      self.extreme_point = high
+      reversal = True
+
+    if reversal:
+      self.af = self.init_af
+      self.high_price_trend.clear()
+      self.low_price_trend.clear()
+    else:
+        if high > self.extreme_point and self.trend == 1:
+          self.af = min(self.af + self.af_step, self.max_af)
+          self.extreme_point = high
+        elif low < self.extreme_point and self.trend == 0:
+          self.af = min(self.af + self.af_step, self.max_af)
+          self.extreme_point = low
+
+    return psar
 
 st.set_page_config(layout="wide")
 
@@ -20,6 +129,7 @@ st.title('Stock analyzer')
 
 pages = ['Prices','Candlesticks']
 pages_f = ['No','Yes']
+check_i = ['No','Yes']
 pages_i = ['MACD', 'SAR', 'Bollinger', 'Fibonacci', 'Stochastics oscillator']
 
 with st.sidebar.expander("General Input"):
@@ -42,8 +152,10 @@ with st.sidebar.expander("Forecast Input"):
   plots_f = st.radio('Show forecast plot ?', pages_f)
 
 with st.sidebar.expander("Technical Analysis Indicator"):
-    st.write("""You can choose different key indicators here""")
-    st.multiselect('Which indicator would you like to plot', pages_i)
+    st.radio('Would you like to plot some indicators ?', check_i)
+    if check_i == 'Yes' : 
+        st.write("""You can choose different key indicators here""")
+        st.multiselect('Which indicator would you like to plot', pages_i)
     
 st.write(f'Analysis is for {ticker} prices from {period_start} to {period_end} with an interval of {interval} and moving average is based on {ma_period} days.')
   
@@ -60,6 +172,14 @@ forecast_days_int = int(forecast_days)
 
 df['SMA'] = df['Close'].rolling(ma_period_int).mean()
 df['EMA'] = df['Close'].ewm(span=ma_period_int).mean()
+indic = PSAR()
+
+df['PSAR'] = df.apply(
+    lambda x: indic.calcPSAR(x['High'], x['Low']), axis=1)
+# Add supporting data
+df['EP'] = indic.ep_list
+df['Trend'] = indic.trend_list
+df['AF'] = indic.af_list
 #######################################################
 
 ### Candlesticks
@@ -95,6 +215,7 @@ with st.container():
   if plots == 'Prices' : st.plotly_chart(fig4)
   if plots == 'Candlesticks' : st.plotly_chart(fig2)
     
+#######################################################
 if plots_f == 'Yes' : 
   
   period1_f = int(time.mktime(period_start_f.timetuple()))
@@ -136,3 +257,7 @@ if plots_f == 'Yes' :
         st.header("Trends")
         st.plotly_chart(plot_components_plotly(m, forecast))
 ############################################################
+if check_i == 'Yes' : 
+    
+    psar_bull = df.loc[df['Trend']==1]['PSAR']
+    psar_bear = df.loc[df['Trend']==0]['PSAR']
