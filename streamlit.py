@@ -259,8 +259,8 @@ if plots_f == 'Yes' :
         st.plotly_chart(plot_components_plotly(m, forecast))
 ############################################################
 if more_opt == 'Yes' :
-    period1_i = int(time.mktime(period_start_f.timetuple()))
-    period2_i = int(time.mktime(period_end_f.timetuple()))
+    period1_i = int(time.mktime(period_start_i.timetuple()))
+    period2_i = int(time.mktime(period_end_i.timetuple()))
     url_i = f'https://query1.finance.yahoo.com/v7/finance/download/{ticker}?period1={period1_i}&period2={period2_i}&interval={interval}&events=history&includeAdjustedClose=true'
     df_i = pd.read_csv(url_i)
     psar_bull = df_i.loc[df_i['Trend']==1][['Date','PSAR']].set_index('Date')
