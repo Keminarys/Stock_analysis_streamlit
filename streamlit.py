@@ -262,7 +262,7 @@ if more_opt == 'Yes' :
     period1_i = int(time.mktime(period_start_f.timetuple()))
     period2_i = int(time.mktime(period_end_f.timetuple()))
     url_i = f'https://query1.finance.yahoo.com/v7/finance/download/{ticker}?period1={period1_i}&period2={period2_i}&interval={interval}&events=history&includeAdjustedClose=true'
-    df_i = pd.read_csv(url_f)
+    df_i = pd.read_csv(url_i)
     psar_bull = df_i.loc[df_i['Trend']==1][['Date','PSAR']].set_index('Date')
     psar_bear = df_i.loc[df_i['Trend']==0][['Date','PSAR']].set_index('Date')
     buy_sigs = df_i.loc[df_i['Trend'].diff()==1][['Date','Close']].set_index('Date')
