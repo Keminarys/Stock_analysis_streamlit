@@ -156,7 +156,7 @@ with st.sidebar.expander("Technical Analysis Indicator"):
     if more_opt == 'Yes' :
         st.write("You can choose different key indicators here")
         period_start_i = st.date_input('Starting date for forecasting input data', datetime.datetime(2023,1,1))
-        period_end_i = st.date_input('Ending date for forecasting input data', datetime.date.today() + datetime.timedelta(days=1))
+        period_end_i = st.date_input('Ending date for forecasting input data', (datetime.date.today() + datetime.timedelta(days=1)))
         indic_to_plot = st.multiselect('Which indicator would you like to plot', pages_i)
 
 
@@ -177,10 +177,7 @@ df['SMA'] = df['Close'].rolling(ma_period_int).mean()
 df['EMA'] = df['Close'].ewm(span=ma_period_int).mean()
 indic = PSAR()
 
-df['PSAR'] = df.apply(lambda x: indic.calcPSAR(x['High'], x['Low']), axis=1)
-df['EP'] = indic.ep_list
-df['Trend'] = indic.trend_list
-df['AF'] = indic.af_list
+
 #######################################################
 
 ### Candlesticks
@@ -263,6 +260,10 @@ if more_opt == 'Yes' :
     period2_i = int(time.mktime(period_end_i.timetuple()))
     url_i = f'https://query1.finance.yahoo.com/v7/finance/download/{ticker}?period1={period1_i}&period2={period2_i}&interval={interval}&events=history&includeAdjustedClose=true'
     df_i = pd.read_csv(url_i)
+    df_i['PSAR'] = df_i.apply(lambda x: indic.calcPSAR(x['High'], x['Low']), axis=1)
+    df_i['EP'] = indic.ep_list
+    df_i['Trend'] = indic.trend_list
+    df_i['AF'] = indic.af_list
     psar_bull = df_i.loc[df_i['Trend']==1][['Date','PSAR']].set_index('Date')
     psar_bear = df_i.loc[df_i['Trend']==0][['Date','PSAR']].set_index('Date')
     buy_sigs = df_i.loc[df_i['Trend'].diff()==1][['Date','Close']].set_index('Date')
