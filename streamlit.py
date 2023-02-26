@@ -155,6 +155,8 @@ with st.sidebar.expander("Technical Analysis Indicator"):
     more_opt = st.radio('Would you like to plot some indicators ?', check_i)
     if more_opt == 'Yes' :
         st.write("You can choose different key indicators here")
+        period_start_i = st.date_input('Starting date for forecasting input data', datetime.datetime(2023,1,1))
+        period_end_i = st.date_input('Ending date for forecasting input data', datetime.date.today() + datetime.timedelta(days=1)))
         indic_to_plot = st.multiselect('Which indicator would you like to plot', pages_i)
 
 
@@ -257,18 +259,21 @@ if plots_f == 'Yes' :
         st.plotly_chart(plot_components_plotly(m, forecast))
 ############################################################
 if more_opt == 'Yes' :
-    
-    psar_bull = df.loc[df['Trend']==1][['Date','PSAR']].set_index('Date')
-    psar_bear = df.loc[df['Trend']==0][['Date','PSAR']].set_index('Date')
-    buy_sigs = df.loc[df['Trend'].diff()==1][['Date','Close']].set_index('Date')
-    short_sigs = df.loc[df['Trend'].diff()==-1][['Date','Close']].set_index('Date')
+    period1_i = int(time.mktime(period_start_f.timetuple()))
+    period2_i = int(time.mktime(period_end_f.timetuple()))
+    url_i = f'https://query1.finance.yahoo.com/v7/finance/download/{ticker}?period1={period1_i}&period2={period2_i}&interval={interval}&events=history&includeAdjustedClose=true'
+    df_i = pd.read_csv(url_f)
+    psar_bull = df_i.loc[df_i['Trend']==1][['Date','PSAR']].set_index('Date')
+    psar_bear = df_i.loc[df_i['Trend']==0][['Date','PSAR']].set_index('Date')
+    buy_sigs = df_i.loc[df_i['Trend'].diff()==1][['Date','Close']].set_index('Date')
+    short_sigs = df_i.loc[df_i['Trend'].diff()==-1][['Date','Close']].set_index('Date')
     if "SAR" in indic_to_plot :
         colors_bull_bear = ['springgreen', 'crimson', 'black']
-        fig_sar = go.Figure([go.Candlestick(x=df['Date'],
-                open=df['Open'],
-                high=df['High'],
-                low=df['Low'],
-                close=df['Close'], name = 'Price'),
+        fig_sar = go.Figure([go.Candlestick(x=df_i['Date'],
+                open=df_i['Open'],
+                high=df_i['High'],
+                low=df_i['Low'],
+                close=df_i['Close'], name = 'Price'),
         go.Scatter( x= psar_bull.index, y = psar_bull.PSAR, name='Up Trend', mode='markers', marker_color = colors_bull_bear[0]), 
         go.Scatter( x= psar_bear.index, y = psar_bear.PSAR, name='Down Trend', mode='markers', marker_color = colors_bull_bear[1]), 
         go.Scatter( x= buy_sigs.index, y = buy_sigs.Close, name='Buy', mode='markers', marker_symbol='triangle-up-dot', marker_size=15, marker_color = colors_bull_bear[2]),
