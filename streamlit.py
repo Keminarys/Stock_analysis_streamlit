@@ -340,6 +340,6 @@ if more_opt == 'Yes' :
         fig_indicators.add_trace(go.Scatter( x= short_sigs.index, y = short_sigs.Close, name='Sell Signal SAR', mode='markers', marker_symbol='triangle-down-dot', marker_size=15, marker_color = colors_bull_bear[2]), row=1, col=1)
 
     fig_indicators.update(layout_xaxis_rangeslider_visible=False)
-    fig_indicators.update_layout(title=ticker+" indicator : "+indic_to_plot,autosize=False,width=2000,height=800)
+    fig_indicators.update_layout(title=ticker+" indicator : "+indic_to_plot.values,autosize=False,width=2000,height=800)
     with st.container():
         st.plotly_chart(fig_indicators)
