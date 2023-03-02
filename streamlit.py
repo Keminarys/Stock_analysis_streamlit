@@ -327,11 +327,11 @@ if more_opt == 'Yes' :
         fig_indicators.add_trace(go.Scatter(x=df_i["Date"], y=df_i['MACD'],
                     mode='lines',
                     name='MACD', marker_color = 'grey'), row=2, col=1)
-        fig_indicators.add_trace(go.Scatter(x=df["Date"], y=df_i['Signal'], mode='lines', name='Signal', marker_color = 'skyblue'), row=2, col=1)
-        fig_indicators.add_trace(go.Bar(x=df['Date'], y=df_i['Hist'], showlegend=False, marker=dict(color=pd.Series(np.where(df_i['Hist'] < 0, 'red', 'green')
+        fig_indicators.add_trace(go.Scatter(x=df_i["Date"], y=df_i['Signal'], mode='lines', name='Signal', marker_color = 'skyblue'), row=2, col=1)
+        fig_indicators.add_trace(go.Bar(x=df_i['Date'], y=df_i['Hist'], showlegend=False, marker=dict(color=pd.Series(np.where(df_i['Hist'] < 0, 'red', 'green')
                        ).astype(str).map({'red':1, 'green':0}),colorscale=[[0, 'green'], [1, 'red']])), row=2, col=1)
-        fig_indicators.add_trace(go.Scatter( x= df.Date, y = buy_price, name='Buy Signal MACD', mode='markers', marker_symbol='triangle-up-dot', marker_size=15, marker_color = 'blue'), row=1, col=1)
-        fig_indicators.add_trace(go.Scatter( x= df.Date, y = sell_price, name='Short Signal MACD', mode='markers', marker_symbol='triangle-down-dot', marker_size=15, marker_color = 'blue'), row=1, col=1)
+        fig_indicators.add_trace(go.Scatter( x= df_i.Date, y = buy_price, name='Buy Signal MACD', mode='markers', marker_symbol='triangle-up-dot', marker_size=15, marker_color = 'blue'), row=1, col=1)
+        fig_indicators.add_trace(go.Scatter( x= df_i.Date, y = sell_price, name='Short Signal MACD', mode='markers', marker_symbol='triangle-down-dot', marker_size=15, marker_color = 'blue'), row=1, col=1)
 
     if 'SAR' in indic_to_plot : 
         fig_indicators.add_trace(go.Scatter( x= psar_bull.index, y = psar_bull.PSAR, name='Up Trend', mode='markers', marker_color = colors_bull_bear[0]),row=1, col=1)
