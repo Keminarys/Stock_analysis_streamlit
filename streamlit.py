@@ -15,6 +15,48 @@ def date_range(start, end):
     days = [start + datetime.timedelta(days=i) for i in range(delta.days + 1)]
     return days
 
+def get_macd(df):
+    df['Fast'] = df['Close'].ewm(span = 26, adjust = False).mean()
+    df['Slow'] = df['Close'].ewm(span = 12, adjust = False).mean()
+    df['MACD'] = df['Fast'] - df['Slow']
+    df['Signal'] = df['MACD'].ewm(span = 9, adjust = False).mean()
+    df['Hist'] = df['MACD'] - df['Signal']
+    return df
+
+def implement_macd_strategy(df):    
+    buy_price = []
+    sell_price = []
+    macd_signal = []
+    signal = 0
+
+    for i in range(len(df)):
+        if df['MACD'][i] > df['Signal'][i]:
+            if signal != 1:
+                buy_price.append(df['Close'][i])
+                sell_price.append(np.nan)
+                signal = 1
+                macd_signal.append(signal)
+            else:
+                buy_price.append(np.nan)
+                sell_price.append(np.nan)
+                macd_signal.append(0)
+        elif df['MACD'][i] < df['Signal'][i]:
+            if signal != -1:
+                buy_price.append(np.nan)
+                sell_price.append(df['Close'][i])
+                signal = -1
+                macd_signal.append(signal)
+            else:
+                buy_price.append(np.nan)
+                sell_price.append(np.nan)
+                macd_signal.append(0)
+        else:
+            buy_price.append(np.nan)
+            sell_price.append(np.nan)
+            macd_signal.append(0)
+            
+    return buy_price, sell_price, macd_signal
+
 class PSAR:
 
   def __init__(self, init_af=0.02, max_af=0.2, af_step=0.02):
@@ -268,19 +310,36 @@ if more_opt == 'Yes' :
     psar_bear = df_i.loc[df_i['Trend']==0][['Date','PSAR']].set_index('Date')
     buy_sigs = df_i.loc[df_i['Trend'].diff()==1][['Date','Close']].set_index('Date')
     short_sigs = df_i.loc[df_i['Trend'].diff()==-1][['Date','Close']].set_index('Date')
-    if "SAR" in indic_to_plot :
-        colors_bull_bear = ['springgreen', 'crimson', 'black']
-        fig_sar = go.Figure([go.Candlestick(x=df_i['Date'],
+    df_i = get_macd(df_i)
+    buy_price, sell_price, macd_signal = implement_macd_strategy(df_i)
+    colors_bull_bear = ['springgreen', 'crimson', 'black']
+    
+    fig_indicators =  make_subplots(rows=2, cols=1, shared_xaxes=True, 
+                vertical_spacing=0.02, subplot_titles=(ticker+" Candlestick",''), 
+                row_width=[0.3, 0.7])
+    fig_indicators.add_trace(go.Candlestick(x=df_i['Date'],
                 open=df_i['Open'],
                 high=df_i['High'],
                 low=df_i['Low'],
-                close=df_i['Close'], name = 'Price'),
-        go.Scatter( x= psar_bull.index, y = psar_bull.PSAR, name='Up Trend', mode='markers', marker_color = colors_bull_bear[0]), 
-        go.Scatter( x= psar_bear.index, y = psar_bear.PSAR, name='Down Trend', mode='markers', marker_color = colors_bull_bear[1]), 
-        go.Scatter( x= buy_sigs.index, y = buy_sigs.Close, name='Buy', mode='markers', marker_symbol='triangle-up-dot', marker_size=15, marker_color = colors_bull_bear[2]),
-        go.Scatter( x= short_sigs.index, y = short_sigs.Close, name='Short', mode='markers', marker_symbol='triangle-down-dot', marker_size=15, marker_color = colors_bull_bear[2])])
-    
-        fig_sar.update(layout_xaxis_rangeslider_visible=False)
-        fig_sar.update_layout(title=ticker+" SAR indicator",autosize=False,width=1500,height=700)
-        with st.container():
-            st.plotly_chart(fig_sar)
+                close=df_i['Close'], name = 'Price'), row=1, col=1)
+
+    if 'MACD' in indic_to_plot:
+        fig_indicators.add_trace(go.Scatter(x=df_i["Date"], y=df_i['MACD'],
+                    mode='lines',
+                    name='MACD', marker_color = 'grey'), row=2, col=1)
+        fig_indicators.add_trace(go.Scatter(x=df["Date"], y=df_i['Signal'], mode='lines', name='Signal', marker_color = 'skyblue'), row=2, col=1)
+        fig_indicators.add_trace(go.Bar(x=df['Date'], y=df_i['Hist'], showlegend=False, marker=dict(color=pd.Series(np.where(df_i['Hist'] < 0, 'red', 'green')
+                       ).astype(str).map({'red':1, 'green':0}),colorscale=[[0, 'green'], [1, 'red']])), row=2, col=1)
+        fig_indicators.add_trace(go.Scatter( x= df.Date, y = buy_price, name='Buy Signal MACD', mode='markers', marker_symbol='triangle-up-dot', marker_size=15, marker_color = 'blue'), row=1, col=1)
+        fig_indicators.add_trace(go.Scatter( x= df.Date, y = sell_price, name='Short Signal MACD', mode='markers', marker_symbol='triangle-down-dot', marker_size=15, marker_color = 'blue'), row=1, col=1)
+
+    if 'SAR' in indic_to_plot : 
+        fig_indicators.add_trace(go.Scatter( x= psar_bull.index, y = psar_bull.PSAR, name='Up Trend', mode='markers', marker_color = colors_bull_bear[0]),row=1, col=1)
+        fig_indicators.add_trace(go.Scatter( x= psar_bear.index, y = psar_bear.PSAR, name='Down Trend', mode='markers', marker_color = colors_bull_bear[1]),row=1, col=1)
+        fig_indicators.add_trace(go.Scatter( x= buy_sigs.index, y = buy_sigs.Close, name='Buy Signal SAR', mode='markers', marker_symbol='triangle-up-dot', marker_size=15, marker_color = colors_bull_bear[2]),row=1, col=1)
+        fig_indicators.add_trace(go.Scatter( x= short_sigs.index, y = short_sigs.Close, name='Sell Signal SAR', mode='markers', marker_symbol='triangle-down-dot', marker_size=15, marker_color = colors_bull_bear[2]), row=1, col=1)
+
+    fig_indicators.update(layout_xaxis_rangeslider_visible=False)
+    fig_indicators.update_layout(title=ticker+" indicator",autosize=False,width=2000,height=800)
+    with st.container():
+        st.plotly_chart(fig_indicators)
