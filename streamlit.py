@@ -18,7 +18,7 @@ def date_range(start, end):
 def get_macd(df):
     df['Fast'] = df['Close'].ewm(span = 26, adjust = False).mean()
     df['Slow'] = df['Close'].ewm(span = 12, adjust = False).mean()
-    df['MACD'] = df['Fast'] - df['Slow']
+    df['MACD'] = df['Slow'] - df['Fast']
     df['Signal'] = df['MACD'].ewm(span = 9, adjust = False).mean()
     df['Hist'] = df['MACD'] - df['Signal']
     return df
