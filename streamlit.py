@@ -197,7 +197,7 @@ with st.sidebar.expander("Technical Analysis Indicator"):
     more_opt = st.radio('Would you like to plot some indicators ?', check_i)
     if more_opt == 'Yes' :
         st.write("You can choose different key indicators here")
-        period_start_i = st.date_input('Starting date for forecasting input data', datetime.datetime(2023,1,1))
+        period_start_i = st.date_input('Starting date for forecasting input data', datetime.datetime(2022,6,1))
         period_end_i = st.date_input('Ending date for forecasting input data', (datetime.date.today() + datetime.timedelta(days=1)))
         indic_to_plot = st.multiselect('Which indicator would you like to plot', pages_i)
 
