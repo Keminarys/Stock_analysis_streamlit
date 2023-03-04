@@ -57,6 +57,40 @@ def implement_macd_strategy(df):
             
     return buy_price, sell_price, macd_signal
 
+def implement_bb_strategy(data, lower_bb, upper_bb):
+    buy_price_bb = []
+    sell_price_bb = []
+    bb_signal = []
+    signal = 0
+    
+    for i in range(1,len(data)):
+        if data[i-1] > lower_bb[i-1] and data[i] < lower_bb[i]:
+            if signal != 1:
+                buy_price_bb.append(data[i])
+                sell_price_bb.append(np.nan)
+                signal = 1
+                bb_signal.append(signal)
+            else:
+                buy_price_bb.append(np.nan)
+                sell_price_bb.append(np.nan)
+                bb_signal.append(0)
+        elif data[i-1] < upper_bb[i-1] and data[i] > upper_bb[i]:
+            if signal != -1:
+                buy_price_bb.append(np.nan)
+                sell_price_bb.append(data[i])
+                signal = -1
+                bb_signal.append(signal)
+            else:
+                buy_price_bb.append(np.nan)
+                sell_price_bb.append(np.nan)
+                bb_signal.append(0)
+        else:
+            buy_price_bb.append(np.nan)
+            sell_price_bb.append(np.nan)
+            bb_signal.append(0)
+            
+    return buy_price_bb, sell_price_bb, bb_signal
+
 class PSAR:
 
   def __init__(self, init_af=0.02, max_af=0.2, af_step=0.02):
@@ -370,8 +404,11 @@ if more_opt == 'Yes' :
         std = df_i['Close'].rolling(window = 20).std()
         df_i['Upper_bb'] = df_i['Close'].rolling(20).mean() + std * 2
         df_i['Lower_bb'] = df_i['Close'].rolling(20).mean() - std * 2
+        buy_price_bb, sell_price_bb, bb_signal = implement_bb_strategy(df_i['Close'], df_i['Lower_bb'], df_i['Upper_bb'])
+        
         fig_indicators.add_trace(go.Scatter(x=df_i["Date"], y=df_i['Upper_bb'], mode='lines',  line = dict(shape = 'linear', color = 'rgb(70,130,180)', dash = 'dot'), name='Upper Bollinger Band'), row=1, col=1)
         fig_indicators.add_trace(go.Scatter(x=df_i["Date"], y=df_i['Lower_bb'], mode='lines',  line = dict(shape = 'linear', color = 'rgb(70,130,180)', dash = 'dot'), name='Lower Bollinger Band'), row=1, col=1)
-        
+        fig_indicators.add_trace(go.Scatter(x= df_i.Date, y = buy_price_bb, name='Buy Signal Bollinger', mode='markers', marker_symbol='triangle-up-dot', marker_size=15, marker_color = 'darkslateblue'), row=1, col=1)
+        fig_indicators.add_trace(go.Scatter(x= df_i.Date, y = sell_price_bb, name='Short Signal Bollinger', mode='markers', marker_symbol='triangle-down-dot', marker_size=15, marker_color = 'darkslateblue'), row=1, col=1)
     with st.container():
         st.plotly_chart(fig_indicators)
