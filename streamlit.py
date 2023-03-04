@@ -364,6 +364,14 @@ if more_opt == 'Yes' :
                 levels.append(min_level + (max_level-min_level)*ratio)
         for i in range(len(levels)):
             fig_indicators.add_hline(levels[i], line_dash="dot", line_color=colors[i],annotation_text=round(levels[i], 2), annotation_position="top right", annotation_font_size=10, annotation_font_color=colors[i], row=1)
+      
+    if 'Bollinger' in indic_to_plot : 
         
-        with st.container():
-            st.plotly_chart(fig_indicators)
+        std = df_i['Close'].rolling(window = 20).std()
+        df_i['Upper_bb'] = df_i['Close'].rolling(20).mean() + std * 2
+        df_i['Lower_bb'] = df_i['Close'].rolling(20).mean() - std * 2
+        fig_indicators.add_trace(go.Scatter(x=df_i["Date"], y=df_i['Upper_bb'], mode='lines', name='Upper Bollinger Band', marker_color = 'dimgray'), row=1, col=1)
+        fig_indicators.add_trace(go.Scatter(x=df_i["Date"], y=df_i['Lower_bb'], mode='lines', name='Lower Bollinger Band', marker_color = 'dimgray'), row=1, col=1)
+        
+    with st.container():
+        st.plotly_chart(fig_indicators)
