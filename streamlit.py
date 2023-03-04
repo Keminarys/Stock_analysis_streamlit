@@ -342,5 +342,28 @@ if more_opt == 'Yes' :
     fig_indicators.update(layout_xaxis_rangeslider_visible=False)
     name_exp = str(indic_to_plot).strip('[]')
     fig_indicators.update_layout(title=ticker+" indicators : "+name_exp,autosize=False,width=2000,height=800)
-    with st.container():
+    
+    if 'Fibonacci' in indic_to_plot :
+        
+        highest_swing = lowest_swing = -1
+        for i in range(1,df_i.shape[0]-1):
+            if df_i['High'][i] > df_i['High'][i-1] and df_i['High'][i] > df_i['High'][i+1] and (highest_swing == -1 or df_i['High'][i] > df_i['High'][highest_swing]):
+            highest_swing = i
+            if df_i['Low'][i] < df_i['Low'][i-1] and df_i['Low'][i] < df_i['Low'][i+1] and (lowest_swing == -1 or df_i['Low'][i] < df_i['Low'][lowest_swing]):
+            lowest_swing = i
+
+        ratios = [0,0.236, 0.382, 0.5 , 0.618, 0.786,1]
+        colors = ["seagreen", "limegreen", "lightgreen","slategray","lightcoral", "firebrick", "darkred"]
+        levels = []
+        max_level = df_i['High'][highest_swing]
+        min_level = df_i['Low'][lowest_swing]
+        for ratio in ratios:
+            if highest_swing > lowest_swing: # Uptrend
+                levels.append(max_level - (max_level-min_level)*ratio)
+            else: # Downtrend
+                levels.append(min_level + (max_level-min_level)*ratio)
+        for i in range(len(levels)):
+            fig_indicators.add_hline(levels[i], line_dash="dot", line_color=colors[i],annotation_text=round(levels[i], 2), annotation_position="top right", annotation_font_size=10, annotation_font_color=colors[i])
+        
+        with st.container():
         st.plotly_chart(fig_indicators)
