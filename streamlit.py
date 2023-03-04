@@ -348,9 +348,9 @@ if more_opt == 'Yes' :
         highest_swing = lowest_swing = -1
         for i in range(1,df_i.shape[0]-1):
             if df_i['High'][i] > df_i['High'][i-1] and df_i['High'][i] > df_i['High'][i+1] and (highest_swing == -1 or df_i['High'][i] > df_i['High'][highest_swing]):
-            highest_swing = i
+                highest_swing = i
             if df_i['Low'][i] < df_i['Low'][i-1] and df_i['Low'][i] < df_i['Low'][i+1] and (lowest_swing == -1 or df_i['Low'][i] < df_i['Low'][lowest_swing]):
-            lowest_swing = i
+                lowest_swing = i
 
         ratios = [0,0.236, 0.382, 0.5 , 0.618, 0.786,1]
         colors = ["seagreen", "limegreen", "lightgreen","slategray","lightcoral", "firebrick", "darkred"]
