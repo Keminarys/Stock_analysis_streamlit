@@ -370,8 +370,8 @@ if more_opt == 'Yes' :
         std = df_i['Close'].rolling(window = 20).std()
         df_i['Upper_bb'] = df_i['Close'].rolling(20).mean() + std * 2
         df_i['Lower_bb'] = df_i['Close'].rolling(20).mean() - std * 2
-        fig_indicators.add_trace(go.Scatter(x=df_i["Date"], y=df_i['Upper_bb'], mode='lines',  line = dict(shape = 'linear', color = 'rgb(218, 165, 32)', dash = 'dot'), name='Upper Bollinger Band', row=1, col=1))
-        fig_indicators.add_trace(go.Scatter(x=df_i["Date"], y=df_i['Lower_bb'], mode='lines',  line = dict(shape = 'linear', color = 'rgb(218, 165, 32)', dash = 'dot'), name='Lower Bollinger Band', row=1, col=1))
+        fig_indicators.add_trace(go.Scatter(x=df_i["Date"], y=df_i['Upper_bb'], mode='lines',  line = dict(shape = 'linear', color = 'rgb(218, 165, 32)', dash = 'dot'), name='Upper Bollinger Band'), row=1, col=1)
+        fig_indicators.add_trace(go.Scatter(x=df_i["Date"], y=df_i['Lower_bb'], mode='lines',  line = dict(shape = 'linear', color = 'rgb(218, 165, 32)', dash = 'dot'), name='Lower Bollinger Band'), row=1, col=1)
         
     with st.container():
         st.plotly_chart(fig_indicators)
