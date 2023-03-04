@@ -363,7 +363,7 @@ if more_opt == 'Yes' :
             else: # Downtrend
                 levels.append(min_level + (max_level-min_level)*ratio)
         for i in range(len(levels)):
-            fig_indicators.add_hline(levels[i], line_dash="dot", line_color=colors[i],annotation_text=round(levels[i], 2), annotation_position="top right", annotation_font_size=10, annotation_font_color=colors[i])
+            fig_indicators.add_hline(levels[i], line_dash="dot", line_color=colors[i],annotation_text=round(levels[i], 2), annotation_position="top right", annotation_font_size=10, annotation_font_color=colors[i], row=1)
         
         with st.container():
             st.plotly_chart(fig_indicators)
