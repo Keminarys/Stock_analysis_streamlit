@@ -320,7 +320,7 @@ with st.container():
         if plots == 'Prices' : st.plotly_chart(fig4)
         if plots == 'Candlesticks' : st.plotly_chart(fig2)
   with col2 :
-    st.dataframe(summary)  
+    st.write(summary)  
 #######################################################
 if plots_f == 'Yes' : 
   
