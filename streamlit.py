@@ -253,7 +253,36 @@ df['SMA'] = df['Close'].rolling(ma_period_int).mean()
 df['EMA'] = df['Close'].ewm(span=ma_period_int).mean()
 indic = PSAR()
 
+summary = pd.DataFrame(index=['Yesterday', 'Last Week', '52 Weeks', 'YTD'], columns=['Lowest', 'Highest', 'Variation'])
 
+df['Date'] = pd.to_datetime(df['Date'])
+
+yest = df.tail(1)[['Low', 'High']]
+yest['var'] = round(((yest['High']-yest['Low'])/yest['Low']), 3)
+summary.loc['Yesterday'] = yest.values
+
+last_week = datetime.date.today() - datetime.timedelta(days=7)
+last_week_data = data.loc[data['Date'] >= last_week]
+lowtlw = last_week_data['Low'].min()
+hightlw = last_week_data['High'].max()
+vartlw = round(((hightlw-lowtlw)/lowtlw), 3)
+summary.loc['Last Week'] = [lowtlw, hightlw, vartlw]
+
+w52 = datetime.date.today() - datetime.timedelta(weeks=52)
+w52_data = data.loc[data['Date'] >= w52]
+lowt52 = w52_data['Low'].min()
+hight52 = w52_data['High'].max()
+vart52 = round(((hight52-lowt52)/lowt52), 3)
+summary.loc['52 Weeks'] = [lowt52, hight52, vart52]
+
+beg_ytd = datetime.datetime.today().date().replace(month=1, day=1)
+ytd_data = data.loc[data['Date'] >= beg_ytd]
+lowtytd = ytd_data['Low'].min()
+hightytd = ytd_data['High'].max()
+vartytd = round(((hightytd-lowtytd)/lowtytd), 3)
+summary.loc['YTD'] = [lowtytd, hightytd, vartytd]
+
+summary['Variation'] = summary['Variation'].apply(lambda x :"{0:.2f}%".format(x*100))
 #######################################################
 
 ### Candlesticks
@@ -286,9 +315,12 @@ fig4.update_layout(
 ########################################################
 
 with st.container():
-  if plots == 'Prices' : st.plotly_chart(fig4)
-  if plots == 'Candlesticks' : st.plotly_chart(fig2)
-    
+  col1, col2 = st.columns(2)
+  with col1 :
+        if plots == 'Prices' : st.plotly_chart(fig4)
+        if plots == 'Candlesticks' : st.plotly_chart(fig2)
+  with col2 :
+    st.dataframe(summary)  
 #######################################################
 if plots_f == 'Yes' : 
   
