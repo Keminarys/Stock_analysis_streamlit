@@ -315,7 +315,7 @@ fig4.update_layout(
 ########################################################
 
 with st.container():
-  col1, col2 = st.columns(2)
+  col1, col2 = st.columns([4, 1])
   with col1 :
         if plots == 'Prices' : st.plotly_chart(fig4)
         if plots == 'Candlesticks' : st.plotly_chart(fig2)
