@@ -275,7 +275,7 @@ hight52 = w52_data['High'].max()
 vart52 = round(((hight52-lowt52)/lowt52), 3)
 summary.loc['52 Weeks'] = [lowt52, hight52, vart52]
 
-beg_ytd = datetime.datetime.today().date().replace(month=1, day=1)
+beg_ytd = datetime.datetime.today().replace(month=1, day=1)
 ytd_data = df.loc[df['Date'] >= beg_ytd]
 lowtytd = ytd_data['Low'].min()
 hightytd = ytd_data['High'].max()
