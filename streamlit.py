@@ -261,14 +261,14 @@ yest = df.tail(1)[['Low', 'High']]
 yest['var'] = round(((yest['High']-yest['Low'])/yest['Low']), 3)
 summary.loc['Yesterday'] = yest.values
 
-last_week = datetime.date.today() - datetime.timedelta(days=7)
+last_week = datetime.datetime.today() - datetime.timedelta(days=7)
 last_week_data = df.loc[df['Date'] >= last_week]
 lowtlw = last_week_data['Low'].min()
 hightlw = last_week_data['High'].max()
 vartlw = round(((hightlw-lowtlw)/lowtlw), 3)
 summary.loc['Last Week'] = [lowtlw, hightlw, vartlw]
 
-w52 = datetime.date.today() - datetime.timedelta(weeks=52)
+w52 = datetime.datetime.today() - datetime.timedelta(weeks=52)
 w52_data = df.loc[df['Date'] >= w52]
 lowt52 = w52_data['Low'].min()
 hight52 = w52_data['High'].max()
