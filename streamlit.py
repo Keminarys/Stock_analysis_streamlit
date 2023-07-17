@@ -317,10 +317,10 @@ fig4.update_layout(
 with st.container():
   col1, col2 = st.columns([4, 1])
   with col1 :
-        if plots == 'Prices' : st.plotly_chart(fig4)
-        if plots == 'Candlesticks' : st.plotly_chart(fig2)
+        if plots == 'Prices' : st.plotly_chart(fig4, use_container_width=True)
+        if plots == 'Candlesticks' : st.plotly_chart(fig2, use_container_width=True)
   with col2 :
-    st.write(summary)  
+    st.dataframe(summary)  
 #######################################################
 if plots_f == 'Yes' : 
   
