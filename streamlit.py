@@ -294,7 +294,7 @@ fig2.add_trace(go.Candlestick(x=df["Date"], open=df["Open"], high=df["High"],
                 row=1, col=1)
 fig2.add_trace(go.Bar(x=df['Date'], y=df['Volume'], showlegend=False), row=2, col=1)
 fig2.update(layout_xaxis_rangeslider_visible=False)
-fig2.update_layout(width=1500, height=700, showlegend=False)
+fig2.update_layout(width=1000, height=700, showlegend=False)
 
 ### Prices 
 fig4 = go.Figure()
@@ -310,7 +310,7 @@ fig4.add_trace(go.Scatter(x=df["Date"], y=df["EMA"],
 fig4.update_layout(
     title=ticker+" Closing/SMA/EMA on "+str(ma_period)+" days",
     autosize=False,
-    width=1500,
+    width=1000,
     height=700)
 ########################################################
 
