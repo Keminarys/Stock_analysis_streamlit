@@ -206,6 +206,7 @@ st.title('Stock analyzer')
 pages = ['Prices','Candlesticks']
 pages_f = ['No','Yes']
 check_i= ['No','Yes']
+check_p= ['No','Yes']
 pages_i = ['MACD', 'SAR', 'Bollinger', 'Fibonacci', 'Stochastics oscillator']
 
 with st.sidebar.expander("General Input"):
@@ -236,7 +237,7 @@ with st.sidebar.expander("Technical Analysis Indicator"):
         indic_to_plot = st.multiselect('Which indicator would you like to plot', pages_i)
         
 with st.sidebar.expander("Portofolio Visualisation"):
-    mult = st.radio('Would you like to plot some indicators ?', check_i)
+    mult = st.radio('Would you like to plot some indicators ?', check_p)
     if mult == 'Yes' :
         st.write("""
         In order to visualize different stocks in one plot \n
