@@ -241,8 +241,6 @@ with st.sidebar.expander("Portofolio Visualisation"):
     Please insert your tickers with a space (ex : AIR.PA ACA.PA)""")
     portfolio_ = st.text_input("Insert tickers here :point_down:")
     portfolio_ = portfolio_.split()
-    st.write(len(portfolio_))
-    st.write(type(portfolio_))
     
 st.write(f'Analysis is for {ticker} prices from {period_start} to {period_end} with an interval of {interval} and moving average is based on {ma_period} days.')
   
@@ -468,11 +466,11 @@ if more_opt == 'Yes' :
 
     with st.container() : 
         if len(portfolio_) > 0 :
+            st.write("Performance of the chosen tickers")
             for i in portfolio_ :
                 df_temp = pd.read_csv(f'https://query1.finance.yahoo.com/v7/finance/download/{i}?period1={period1}&period2={period2}&interval={interval}&events=history&includeAdjustedClose=true')
                 df_temp['Ticker'] = i
                 df_portfolio = pd.concat([df_portfolio, df_temp], ignore_index=True)
-            st.write("Performance of the chosen tickers")
             st.plotly_chart(fig_port)
 
 
