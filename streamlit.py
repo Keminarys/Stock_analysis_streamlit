@@ -236,11 +236,13 @@ with st.sidebar.expander("Technical Analysis Indicator"):
         indic_to_plot = st.multiselect('Which indicator would you like to plot', pages_i)
         
 with st.sidebar.expander("Portofolio Visualisation"):
-    st.write("""
-    In order to visualize different stocks in one plot \n
-    Please insert your tickers with a space (ex : AIR.PA ACA.PA)""")
-    portfolio_ = st.text_input("Insert tickers here :point_down:")
-    portfolio_ = portfolio_.split()
+    mult = st.radio('Would you like to plot some indicators ?', check_i)
+    if mult == 'Yes' :
+        st.write("""
+        In order to visualize different stocks in one plot \n
+        Please insert your tickers with a space (ex : AIR.PA ACA.PA)""")
+        portfolio_ = st.text_input("Insert tickers here :point_down:")
+        portfolio_ = portfolio_.split()
     
 st.write(f'Analysis is for {ticker} prices from {period_start} to {period_end} with an interval of {interval} and moving average is based on {ma_period} days.')
   
@@ -455,7 +457,7 @@ if more_opt == 'Yes' :
 
 #############################################################################################################
 with st.container() :
-    if len(portfolio_) > 0 :
+    if mult == 'Yes' :
         st.write("Performance of the chosen tickers")
         for i in portfolio_ :
             st.write(i)
