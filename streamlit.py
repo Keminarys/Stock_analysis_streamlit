@@ -234,8 +234,11 @@ with st.sidebar.expander("Technical Analysis Indicator"):
         period_start_i = st.date_input('Starting date for forecasting input data', datetime.datetime(2022,6,1))
         period_end_i = st.date_input('Ending date for forecasting input data', (datetime.date.today() + datetime.timedelta(days=1)))
         indic_to_plot = st.multiselect('Which indicator would you like to plot', pages_i)
-
-
+with st.sidebar.expander("Portofolio Visualisation"):
+    portfolio_ = st.write("""
+    In order to visualize different stocks in one plot \n
+    Please insert your tickers with a space (ex : AIR.PA ACA.PA)""")
+    portfolio_ = portfolio_.split()
 st.write(f'Analysis is for {ticker} prices from {period_start} to {period_end} with an interval of {interval} and moving average is based on {ma_period} days.')
   
 #####################################################
@@ -245,6 +248,8 @@ period2 = int(time.mktime(period_end.timetuple()))
 url = f'https://query1.finance.yahoo.com/v7/finance/download/{ticker}?period1={period1}&period2={period2}&interval={interval}&events=history&includeAdjustedClose=true'
 
 df = pd.read_csv(url)
+df_portfolio = pd.DataFrame(columns = df.columns)
+df_portfolio['Ticker'] = ""
 
 ma_period_int = int(ma_period)
 forecast_days_int = int(forecast_days)
@@ -309,6 +314,17 @@ fig4.add_trace(go.Scatter(x=df["Date"], y=df["EMA"],
 
 fig4.update_layout(
     title=ticker+" Closing/SMA/EMA on "+str(ma_period)+" days",
+    autosize=False,
+    width=1000,
+    height=700)
+
+fig_port = go.Figure()
+for i in df_portfolio.Ticker.unique() : 
+    fig_port.add_trace(go.Scatter(x=df.loc[df['Ticker'] == i]["Date"], y=df.loc[df['Ticker'] == i]["Close"],
+                    mode='lines',
+                    name=i))
+fig_port.update_layout(
+    title="Portfolio performance visualisation",
     autosize=False,
     width=1000,
     height=700)
@@ -444,3 +460,15 @@ if more_opt == 'Yes' :
         fig_indicators.add_trace(go.Scatter(x= df_i.Date, y = sell_price_bb, name='Short Signal Bollinger', mode='markers', marker_symbol='triangle-down-dot', marker_size=15, marker_color = 'darkslateblue'), row=1, col=1)
     with st.container():
         st.plotly_chart(fig_indicators)
+
+    with st.container() : 
+        if len(portfolio_) > 0 :
+            for i in portfolio_ :
+                df_temp = pd.read_csv(f'https://query1.finance.yahoo.com/v7/finance/download/{i}?period1={period1}&period2={period2}&interval={interval}&events=history&includeAdjustedClose=true')
+                df_temp['Ticker'] = i
+                df_portfolio = pd.concat([df_portfolio, df_temp], ignore_index=True)
+            st.write("Performance of the chosen tickers")
+            st.plotly_chart(fig_port)
+
+
+    
