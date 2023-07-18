@@ -237,8 +237,8 @@ with st.sidebar.expander("Technical Analysis Indicator"):
         indic_to_plot = st.multiselect('Which indicator would you like to plot', pages_i)
         
 with st.sidebar.expander("Portofolio Visualisation"):
-    mult = st.radio('Would you like to plot some indicators ?', check_p)
-    if mult == 'Yes' :
+    mult_ = st.radio('Would you like to plot more than one ticker ?', check_p)
+    if mult_ == 'Yes' :
         st.write("""
         In order to visualize different stocks in one plot \n
         Please insert your tickers with a space (ex : AIR.PA ACA.PA)""")
@@ -458,7 +458,7 @@ if more_opt == 'Yes' :
 
 #############################################################################################################
 with st.container() :
-    if mult == 'Yes' :
+    if len(portfolio_) > 0 :
         st.write("Performance of the chosen tickers")
         for i in portfolio_ :
             st.write(i)
