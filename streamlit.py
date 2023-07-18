@@ -240,9 +240,9 @@ with st.sidebar.expander("Portofolio Visualisation"):
     In order to visualize different stocks in one plot \n
     Please insert your tickers with a space (ex : AIR.PA ACA.PA)""")
     portfolio_ = st.text_input("Insert tickers here :point_down:")
-    st.write(portfolio_)
     portfolio_ = portfolio_.split()
-    st.write(portfolio_)
+    st.write(len(portfolio_))
+    st.write(type(portfolio_))
     
 st.write(f'Analysis is for {ticker} prices from {period_start} to {period_end} with an interval of {interval} and moving average is based on {ma_period} days.')
   
