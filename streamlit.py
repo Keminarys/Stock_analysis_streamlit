@@ -252,7 +252,6 @@ period1 = int(time.mktime(period_start.timetuple()))
 period2 = int(time.mktime(period_end.timetuple()))
 
 url = f'https://query1.finance.yahoo.com/v7/finance/download/{ticker}?period1={period1}&period2={period2}&interval={interval}&events=history&includeAdjustedClose=true'
-
 df = pd.read_csv(url)
 df_portfolio = pd.DataFrame()
 
