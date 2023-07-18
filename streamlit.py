@@ -235,9 +235,10 @@ with st.sidebar.expander("Technical Analysis Indicator"):
         period_end_i = st.date_input('Ending date for forecasting input data', (datetime.date.today() + datetime.timedelta(days=1)))
         indic_to_plot = st.multiselect('Which indicator would you like to plot', pages_i)
 with st.sidebar.expander("Portofolio Visualisation"):
-    portfolio_ = st.write("""
+    st.write("""
     In order to visualize different stocks in one plot \n
     Please insert your tickers with a space (ex : AIR.PA ACA.PA)""")
+    portfolio_ = st.text_input()
     portfolio_ = portfolio_.split()
 st.write(f'Analysis is for {ticker} prices from {period_start} to {period_end} with an interval of {interval} and moving average is based on {ma_period} days.')
   
