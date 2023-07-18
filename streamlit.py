@@ -464,8 +464,8 @@ if more_opt == 'Yes' :
     with st.container():
         st.plotly_chart(fig_indicators)
 
-    with st.container() : 
-        if len(portfolio_) > 0 :
+    if len(portfolio_) > 0 :
+        with st.container() : 
             st.write("Performance of the chosen tickers")
             for i in portfolio_ :
                 df_temp = pd.read_csv(f'https://query1.finance.yahoo.com/v7/finance/download/{i}?period1={period1}&period2={period2}&interval={interval}&events=history&includeAdjustedClose=true')
