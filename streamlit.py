@@ -251,8 +251,7 @@ period2 = int(time.mktime(period_end.timetuple()))
 url = f'https://query1.finance.yahoo.com/v7/finance/download/{ticker}?period1={period1}&period2={period2}&interval={interval}&events=history&includeAdjustedClose=true'
 
 df = pd.read_csv(url)
-df_portfolio = pd.DataFrame(columns = df.columns)
-df_portfolio['Ticker'] = ""
+df_portfolio = pd.DataFrame()
 
 ma_period_int = int(ma_period)
 forecast_days_int = int(forecast_days)
@@ -371,15 +370,6 @@ if plots_f == 'Yes' :
         st.header("Trends")
         st.plotly_chart(plot_components_plotly(m, forecast))
         
-with st.container() :
-    if len(portfolio_) > 0 :
-        st.write("Performance of the chosen tickers")
-        for i in portfolio_ :
-            i = i[1:-1]
-            df_temp = pd.read_csv(f'https://query1.finance.yahoo.com/v7/finance/download/{i}?period1={period1}&period2={period2}&interval={interval}&events=history&includeAdjustedClose=true')
-            df_temp['Ticker'] = i
-            df_portfolio = pd.concat([df_portfolio, df_temp], ignore_index=True)
-        st.dataframe(df_portfolio)
 ############################################################
 if more_opt == 'Yes' :
     period1_i = int(time.mktime(period_start_i.timetuple()))
@@ -463,7 +453,15 @@ if more_opt == 'Yes' :
     with st.container():
         st.plotly_chart(fig_indicators)
 
-
+#############################################################################################################
+with st.container() :
+    if len(portfolio_) > 0 :
+        st.write("Performance of the chosen tickers")
+        for i in portfolio_ :
+            df_temp = pd.read_csv(f'https://query1.finance.yahoo.com/v7/finance/download/{i}?period1={period1}&period2={period2}&interval={interval}&events=history&includeAdjustedClose=true')
+            df_temp['Ticker'] = i
+            df_portfolio = pd.concat([df_portfolio, df_temp], ignore_index=True)
+        st.dataframe(df_portfolio)
 
 
     
