@@ -320,17 +320,6 @@ fig4.update_layout(
     autosize=False,
     width=1000,
     height=700)
-
-fig_port = go.Figure()
-for i in df_portfolio.Ticker.unique() : 
-    fig_port.add_trace(go.Scatter(x=df.loc[df['Ticker'] == i]["Date"], y=df.loc[df['Ticker'] == i]["Close"],
-                    mode='lines',
-                    name=i))
-fig_port.update_layout(
-    title="Portfolio performance visualisation",
-    autosize=False,
-    width=1000,
-    height=700)
 ########################################################
 
 with st.container():
@@ -382,14 +371,14 @@ if plots_f == 'Yes' :
         st.header("Trends")
         st.plotly_chart(plot_components_plotly(m, forecast))
         
-    with st.container() :
-        if len(portfolio_) > 0 :
-            st.write("Performance of the chosen tickers")
-            for i in portfolio_ :
-                df_temp = pd.read_csv(f'https://query1.finance.yahoo.com/v7/finance/download/{i}?period1={period1}&period2={period2}&interval={interval}&events=history&includeAdjustedClose=true')
-                df_temp['Ticker'] = i
-                df_portfolio = pd.concat([df_portfolio, df_temp], ignore_index=True)
-            st.dataframe(df_portfolio)
+with st.container() :
+    if len(portfolio_) > 0 :
+        st.write("Performance of the chosen tickers")
+        for i in portfolio_ :
+            df_temp = pd.read_csv(f'https://query1.finance.yahoo.com/v7/finance/download/{i}?period1={period1}&period2={period2}&interval={interval}&events=history&includeAdjustedClose=true')
+            df_temp['Ticker'] = i
+            df_portfolio = pd.concat([df_portfolio, df_temp], ignore_index=True)
+        st.dataframe(df_portfolio)
 ############################################################
 if more_opt == 'Yes' :
     period1_i = int(time.mktime(period_start_i.timetuple()))
