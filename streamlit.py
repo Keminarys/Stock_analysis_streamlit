@@ -464,7 +464,7 @@ with st.container() :
             df_temp['Ticker'] = i
             df_portfolio = pd.concat([df_portfolio, df_temp], ignore_index=True)
         fig_port = px.line(df_portfolio, x="Date", y="Close", color='Ticker', log_y=True)
-        st.plotly_chart(fig_port)
+        st.plotly_chart(fig_port, use_container_width = True)
 
 
 
