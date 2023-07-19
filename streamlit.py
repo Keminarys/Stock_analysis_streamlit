@@ -459,12 +459,11 @@ if more_opt == 'Yes' :
 with st.container() :
     if len(portfolio_) > 0 :
         st.write("Performance of the chosen tickers")
-        # for i in portfolio_ :
-        #     st.write(i)
-        #     df_temp = pd.read_csv(f'https://query1.finance.yahoo.com/v7/finance/download/{i}?period1={period1}&period2={period2}&interval={interval}&events=history&includeAdjustedClose=true')
-        #     df_temp['Ticker'] = i
-        #     df_portfolio = pd.concat([df_portfolio, df_temp], ignore_index=True)
-        # st.dataframe(df_portfolio)
+        for i in portfolio_ :
+            df_temp = pd.read_csv(f'https://query1.finance.yahoo.com/v7/finance/download/{i}?period1={period1}&period2={period2}&interval={interval}&events=history&includeAdjustedClose=true')
+            df_temp['Ticker'] = i
+            df_portfolio = pd.concat([df_portfolio, df_temp], ignore_index=True)
+        st.dataframe(df_portfolio)
 
 
     
