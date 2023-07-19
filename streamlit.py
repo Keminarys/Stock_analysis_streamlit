@@ -463,7 +463,7 @@ with st.container() :
             df_temp = pd.read_csv(f'https://query1.finance.yahoo.com/v7/finance/download/{i}?period1={period1}&period2={period2}&interval={interval}&events=history&includeAdjustedClose=true')
             df_temp['Ticker'] = i
             df_portfolio = pd.concat([df_portfolio, df_temp], ignore_index=True)
-        fig_port = px.line(df_portfolio, x="Date", y="Close", color='Ticker', type = 'Log')
+        fig_port = px.line(df_portfolio, x="Date", y="Close", color='Ticker', log_y=True)
         st.plotly_chart(fig_port)
 
 
