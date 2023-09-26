@@ -246,13 +246,12 @@ with st.sidebar.expander("Portofolio Visualisation"):
         portfolio_ = st.text_input("Insert tickers here :point_down:")
         portfolio_ = portfolio_.split()
 
-with st.sidebar.expander("PVariation Percentage Visualisation"):
+with st.sidebar.expander("Variation Percentage Visualisation"):
     var_ = st.radio('Would you like to see variation in % ?', check_v)
     if var_ == 'Yes' :
         st.write("""
-        In order to visualize different stocks in one plot \n
         Please insert your tickers with a space (ex : AIR.PA ACA.PA)""")
-        variation_ = st.text_input("Insert tickers here :point_down:")
+        variation_ = st.text_input("List here :point_down:")
         variation_ = variation_.split()
     
 st.write(f'Analysis is for {ticker} prices from {period_start} to {period_end} with an interval of {interval} and moving average is based on {ma_period} days.')
