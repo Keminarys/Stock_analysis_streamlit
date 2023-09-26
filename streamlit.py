@@ -483,7 +483,11 @@ with st.container() :
             df_temp_var = pd.read_csv(f'https://query1.finance.yahoo.com/v7/finance/download/{i}?period1={period1}&period2={period2}&interval={interval}&events=history&includeAdjustedClose=true')
             df_temp_var['Ticker'] = i
             df_variation = pd.concat([df_variation, df_temp_var], ignore_index=True)
-            
+
+        df_variation["Open_Close_%"] = (df_variation['Close'] / df_variation['Open'])
+        df_variation["Low_%"] = (df_variation['Low'] / df_variation['Open'])
+        df_variation["High_%"] = (df_variation['High'] / df_variation['Open'])
+        
         fig_var = make_subplots(rows=len(df_variation.Ticker.unique()), cols=1,
                     shared_xaxes=True,
                     vertical_spacing=0.05,
