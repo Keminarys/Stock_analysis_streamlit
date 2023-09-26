@@ -244,6 +244,15 @@ with st.sidebar.expander("Portofolio Visualisation"):
         Please insert your tickers with a space (ex : AIR.PA ACA.PA)""")
         portfolio_ = st.text_input("Insert tickers here :point_down:")
         portfolio_ = portfolio_.split()
+
+with st.sidebar.expander("PVariation Percentage Visualisation"):
+    var_ = st.radio('Would you like to see variation in % ?', check_p)
+    if var_ == 'Yes' :
+        st.write("""
+        In order to visualize different stocks in one plot \n
+        Please insert your tickers with a space (ex : AIR.PA ACA.PA)""")
+        variation_ = st.text_input("Insert tickers here :point_down:")
+        variation_ = variation_.split()
     
 st.write(f'Analysis is for {ticker} prices from {period_start} to {period_end} with an interval of {interval} and moving average is based on {ma_period} days.')
   
@@ -254,6 +263,7 @@ period2 = int(time.mktime(period_end.timetuple()))
 url = f'https://query1.finance.yahoo.com/v7/finance/download/{ticker}?period1={period1}&period2={period2}&interval={interval}&events=history&includeAdjustedClose=true'
 df = pd.read_csv(url)
 df_portfolio = pd.DataFrame()
+df_variation =  pd.DataFrame()
 
 ma_period_int = int(ma_period)
 forecast_days_int = int(forecast_days)
@@ -457,7 +467,7 @@ if more_opt == 'Yes' :
 
 #############################################################################################################
 with st.container() :
-    if len(portfolio_) > 0 :
+    if len(portfolio_) > 0 and mult_ == "Yes":
         st.write("Performance of the chosen tickers")
         for i in portfolio_ :
             df_temp = pd.read_csv(f'https://query1.finance.yahoo.com/v7/finance/download/{i}?period1={period1}&period2={period2}&interval={interval}&events=history&includeAdjustedClose=true')
@@ -466,6 +476,55 @@ with st.container() :
         fig_port = px.line(df_portfolio, x="Date", y="Close", color='Ticker', log_y=True)
         st.plotly_chart(fig_port, use_container_width = True)
 
+with st.container() :
+    if len(variation_) > 0 and var_ == "Yes":
+        st.write("Variation in % for chosen tickers")
+        for i in variation_ :
+            df_temp_var = pd.read_csv(f'https://query1.finance.yahoo.com/v7/finance/download/{i}?period1={period1}&period2={period2}&interval={interval}&events=history&includeAdjustedClose=true')
+            df_temp_var['Ticker'] = i
+            df_variation = pd.concat([df_variation, df_temp_var], ignore_index=True)
+            
+        fig_var = make_subplots(rows=len(df_variation.Ticker.unique()), cols=1,
+                    shared_xaxes=True,
+                    vertical_spacing=0.05,
+                    subplot_titles=(df_variation.Ticker.unique()))
 
+        for i, r, c in zip(df_variation.Ticker.unique(), range(1,len(df_variation.Ticker.unique())+1,1), ['rgb(120, 0, 0)', 'rgb(0, 120, 0)', 'rgb(0, 0, 120)']) :
+              
+            df_portfolio_temp = df_variation.loc[df_variation['Ticker'] == i]
 
-    
+            fig_var.add_trace(go.Scatter(name=i,
+                                   x=df_portfolio_temp['Date'],
+                                   y=df_portfolio_temp['Open_Close_%'],
+                                   mode='lines',
+                                   line=dict(color=c),
+                                  ), row=r, col=1)
+            fig_var.add_trace(go.Scatter(
+                                    name='High %',
+                                    x=df_portfolio_temp['Date'],
+                                    y=df_portfolio_temp['High_%'],
+                                    mode='lines',
+                                    marker=dict(color="#444"),
+                                    line=dict(width=0),
+                                    fillcolor='rgba(68, 68, 68, 0.3)',
+                                    showlegend=False
+                                    ), row=r, col=1)
+            fig_var.add_trace(go.Scatter(
+                                    name='Low %',
+                                    x=df_portfolio_temp['Date'],
+                                    y=df_portfolio_temp['Low_%'],
+                                    marker=dict(color="#444"),
+                                    line=dict(width=0),
+                                    mode='lines',
+                                    fillcolor='rgba(68, 68, 68, 0.3)',
+                                    fill='tonexty',
+                                    showlegend=False
+                                    ),row=r, col=1)
+            fig_var.update_yaxes(title_text="Variation in %", row=r, col=1)
+            fig_var.update_layout(
+                            title='Variation in % with lowest and highest weekly',
+                            hovermode="x",
+                            height=800,
+                            width=1200
+                            )
+        st.plotly_chart(fig_var, use_container_width = True)
