@@ -467,14 +467,15 @@ if more_opt == 'Yes' :
 
 #############################################################################################################
 with st.container() :
-    if len(portfolio_) > 0 and mult_ == "Yes":
-        st.write("Performance of the chosen tickers")
-        for i in portfolio_ :
-            df_temp = pd.read_csv(f'https://query1.finance.yahoo.com/v7/finance/download/{i}?period1={period1}&period2={period2}&interval={interval}&events=history&includeAdjustedClose=true')
-            df_temp['Ticker'] = i
-            df_portfolio = pd.concat([df_portfolio, df_temp], ignore_index=True)
-        fig_port = px.line(df_portfolio, x="Date", y="Close", color='Ticker', log_y=True)
-        st.plotly_chart(fig_port, use_container_width = True)
+    if mult_ == "Yes" :
+        if len(portfolio_) > 0 :
+            st.write("Performance of the chosen tickers")
+            for i in portfolio_ :
+                df_temp = pd.read_csv(f'https://query1.finance.yahoo.com/v7/finance/download/{i}?period1={period1}&period2={period2}&interval={interval}&events=history&includeAdjustedClose=true')
+                df_temp['Ticker'] = i
+                df_portfolio = pd.concat([df_portfolio, df_temp], ignore_index=True)
+            fig_port = px.line(df_portfolio, x="Date", y="Close", color='Ticker', log_y=True)
+            st.plotly_chart(fig_port, use_container_width = True)
 
 with st.container() :
     if len(variation_) > 0 and var_ == "Yes":
