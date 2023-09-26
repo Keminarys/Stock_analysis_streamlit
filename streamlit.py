@@ -207,6 +207,7 @@ pages = ['Prices','Candlesticks']
 pages_f = ['No','Yes']
 check_i= ['No','Yes']
 check_p= ['No','Yes']
+check_v= ['No','Yes']
 pages_i = ['MACD', 'SAR', 'Bollinger', 'Fibonacci', 'Stochastics oscillator']
 
 with st.sidebar.expander("General Input"):
@@ -246,7 +247,7 @@ with st.sidebar.expander("Portofolio Visualisation"):
         portfolio_ = portfolio_.split()
 
 with st.sidebar.expander("PVariation Percentage Visualisation"):
-    var_ = st.radio('Would you like to see variation in % ?', check_p)
+    var_ = st.radio('Would you like to see variation in % ?', check_v)
     if var_ == 'Yes' :
         st.write("""
         In order to visualize different stocks in one plot \n
