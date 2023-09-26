@@ -251,7 +251,7 @@ with st.sidebar.expander("Variation Percentage Visualisation"):
     if var_ == 'Yes' :
         st.write("""
         Please insert your tickers with a space (ex : AIR.PA ACA.PA)""")
-        variation_ = st.text_input("List here :point_down:")
+        variation_ = st.text_input("List here (3 maximum for now) :point_down:")
         variation_ = variation_.split()
     
 st.write(f'Analysis is for {ticker} prices from {period_start} to {period_end} with an interval of {interval} and moving average is based on {ma_period} days.')
@@ -478,33 +478,34 @@ with st.container() :
             st.plotly_chart(fig_port, use_container_width = True)
 
 with st.container() :
-    if len(variation_) > 0 and var_ == "Yes":
-        st.write("Variation in % for chosen tickers")
-        for i in variation_ :
-            df_temp_var = pd.read_csv(f'https://query1.finance.yahoo.com/v7/finance/download/{i}?period1={period1}&period2={period2}&interval={interval}&events=history&includeAdjustedClose=true')
-            df_temp_var['Ticker'] = i
-            df_variation = pd.concat([df_variation, df_temp_var], ignore_index=True)
+    if var_ == "Yes":
+        if len(variation_) > 0 :
+            st.write("Variation in % for chosen tickers")
+            for i in variation_ :
+                df_temp_var = pd.read_csv(f'https://query1.finance.yahoo.com/v7/finance/download/{i}?period1={period1}&period2={period2}&interval={interval}&events=history&includeAdjustedClose=true')
+                df_temp_var['Ticker'] = i
+                df_variation = pd.concat([df_variation, df_temp_var], ignore_index=True)
 
-        df_variation["Open_Close_%"] = (df_variation['Close'] / df_variation['Open'])
-        df_variation["Low_%"] = (df_variation['Low'] / df_variation['Open'])
-        df_variation["High_%"] = (df_variation['High'] / df_variation['Open'])
-        
-        fig_var = make_subplots(rows=len(df_variation.Ticker.unique()), cols=1,
+            df_variation["Open_Close_%"] = (df_variation['Close'] / df_variation['Open'])
+            df_variation["Low_%"] = (df_variation['Low'] / df_variation['Open'])
+            df_variation["High_%"] = (df_variation['High'] / df_variation['Open'])
+         
+            fig_var = make_subplots(rows=len(df_variation.Ticker.unique()), cols=1,
                     shared_xaxes=True,
                     vertical_spacing=0.05,
                     subplot_titles=(df_variation.Ticker.unique()))
 
-        for i, r, c in zip(df_variation.Ticker.unique(), range(1,len(df_variation.Ticker.unique())+1,1), ['rgb(120, 0, 0)', 'rgb(0, 120, 0)', 'rgb(0, 0, 120)']) :
+            for i, r, c in zip(df_variation.Ticker.unique(), range(1,len(df_variation.Ticker.unique())+1,1), ['rgb(120, 0, 0)', 'rgb(0, 120, 0)', 'rgb(0, 0, 120)']) :
               
-            df_portfolio_temp = df_variation.loc[df_variation['Ticker'] == i]
+                df_portfolio_temp = df_variation.loc[df_variation['Ticker'] == i]
 
-            fig_var.add_trace(go.Scatter(name=i,
+                fig_var.add_trace(go.Scatter(name=i,
                                    x=df_portfolio_temp['Date'],
                                    y=df_portfolio_temp['Open_Close_%'],
                                    mode='lines',
                                    line=dict(color=c),
                                   ), row=r, col=1)
-            fig_var.add_trace(go.Scatter(
+                fig_var.add_trace(go.Scatter(
                                     name='High %',
                                     x=df_portfolio_temp['Date'],
                                     y=df_portfolio_temp['High_%'],
@@ -514,7 +515,7 @@ with st.container() :
                                     fillcolor='rgba(68, 68, 68, 0.3)',
                                     showlegend=False
                                     ), row=r, col=1)
-            fig_var.add_trace(go.Scatter(
+                fig_var.add_trace(go.Scatter(
                                     name='Low %',
                                     x=df_portfolio_temp['Date'],
                                     y=df_portfolio_temp['Low_%'],
@@ -525,11 +526,11 @@ with st.container() :
                                     fill='tonexty',
                                     showlegend=False
                                     ),row=r, col=1)
-            fig_var.update_yaxes(title_text="Variation in %", row=r, col=1)
-            fig_var.update_layout(
+                fig_var.update_yaxes(title_text="Variation in %", row=r, col=1)
+                fig_var.update_layout(
                             title='Variation in % with lowest and highest weekly',
                             hovermode="x",
                             height=800,
                             width=1200
                             )
-        st.plotly_chart(fig_var, use_container_width = True)
+            st.plotly_chart(fig_var, use_container_width = True)
