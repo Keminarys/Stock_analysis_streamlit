@@ -3,3 +3,4 @@ numpy == 1.21.6
 plotly == 5.5.0
 holidays==0.24
 prophet==1.1.2
+yfinance==0.2.37
