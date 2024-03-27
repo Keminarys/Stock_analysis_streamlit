@@ -261,7 +261,7 @@ st.write(f'Analysis is for {ticker} prices from {period_start} to {period_end} w
 period1 = int(time.mktime(period_start.timetuple()))
 period2 = int(time.mktime(period_end.timetuple()))
 
-df = yf.download(ticker,period1,period2, interval = interval_r)
+df = yf.download(ticker,period1,period2, interval = interval_r).reset_index()
 df_portfolio = pd.DataFrame()
 df_variation =  pd.DataFrame()
 
@@ -345,7 +345,7 @@ if plots_f == 'Yes' :
   
   period1_f = int(time.mktime(period_start_f.timetuple()))
   period2_f = int(time.mktime(period_end_f.timetuple()))
-  df_f = yf.download(ticker,period1_f,period2_f,interval = interval_r)
+  df_f = yf.download(ticker,period1_f,period2_f,interval = interval_r).reset_index()
 
   startDatec = datetime.datetime(2020, 2, 17)
   endDatec = datetime.datetime(2020, 3, 17)      
@@ -385,7 +385,7 @@ if plots_f == 'Yes' :
 if more_opt == 'Yes' :
     period1_i = int(time.mktime(period_start_i.timetuple()))
     period2_i = int(time.mktime(period_end_i.timetuple()))
-    df_i = yf.download(ticker,period1_i,period2_i,interval = interval_r)
+    df_i = yf.download(ticker,period1_i,period2_i,interval = interval_r).reset_index()
     df_i['PSAR'] = df_i.apply(lambda x: indic.calcPSAR(x['High'], x['Low']), axis=1)
     df_i['EP'] = indic.ep_list
     df_i['Trend'] = indic.trend_list
@@ -469,7 +469,7 @@ with st.container() :
         if len(portfolio_) > 0 :
             st.write("Performance of the chosen tickers")
             for i in portfolio_ :
-                df_temp = yf.download(i,period1,period2, interval = interval_r)
+                df_temp = yf.download(i,period1,period2, interval = interval_r).reset_index()
                 df_temp['Ticker'] = i
                 df_portfolio = pd.concat([df_portfolio, df_temp], ignore_index=True)
             fig_port = px.line(df_portfolio, x="Date", y="Close", color='Ticker', log_y=True)
@@ -480,7 +480,7 @@ with st.container() :
         if len(variation_) > 0 :
             st.write("Variation in % for chosen tickers")
             for i in variation_ :
-                df_temp_var = yf.download(i,period1,period2, interval = interval_r)
+                df_temp_var = yf.download(i,period1,period2, interval = interval_r).reset_index()
                 df_temp_var['Ticker'] = i
                 df_variation = pd.concat([df_variation, df_temp_var], ignore_index=True)
 
