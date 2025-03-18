@@ -261,7 +261,7 @@ st.write(f'Analysis is for {ticker} prices from {period_start} to {period_end} w
 period1 = int(time.mktime(period_start.timetuple()))
 period2 = int(time.mktime(period_end.timetuple()))
 
-df = yf.download(ticker,period1,period2, interval = interval_r).reset_index()
+df = yf.download(ticker,period1,period2, interval = interval_r, multi_level_index=False).reset_index()
 df_portfolio = pd.DataFrame()
 df_variation =  pd.DataFrame()
 
